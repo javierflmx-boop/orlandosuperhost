@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Orlando Superhost</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { background: #111; font-family: system-ui, -apple-system, sans-serif; color: #f0ede8; min-height: 100vh; }
+
+  /* PAGES */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: flex; flex-direction: column; }
+
+  /* LOGO */
+  .logo { text-align: center; padding: 28px 0 18px; font-size: 11px; font-weight: 300; letter-spacing: .55em; color: #E8601C; text-transform: uppercase; }
+
+  /* LANDING TILES */
+  .tiles { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 24px; max-width: 500px; margin: 0 auto; width: 100%; }
+
+  .tile {
+    border-radius: 26px; background: #1a1a1a; cursor: pointer;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 24px; border: 2px solid transparent;
+    transition: transform .18s ease, border-color .18s ease;
+    -webkit-user-select: none; user-select: none;
+  }
+  .tile:active { transform: scale(0.96); border-color: #E8601C; }
+  .tile-top { height: 210px; }
+  .tile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile-half { height: 180px; }
+
+  .tile-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #E8601C; opacity: 0; transition: opacity .18s; }
+  .tile:active .tile-bar { opacity: 1; }
+
+  .tile-sub { font-size: 9px; letter-spacing: .35em; color: #E8601C; text-transform: uppercase; margin-bottom: 8px; }
+  .tile-label { font-size: 44px; font-weight: 700; color: #fafafa; letter-spacing: -.02em; line-height: 1; }
+  .tile-arrow { position: absolute; bottom: 20px; right: 22px; font-size: 18px; color: rgba(232,96,28,.4); }
+
+  /* WHATSAPP STRIP */
+  .wa-strip {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 22px; border-radius: 18px; background: #222;
+    cursor: pointer; border: 1px solid rgba(232,96,28,.15);
+    -webkit-user-select: none; user-select: none;
+  }
+  .wa-strip:active { background: #2a2a2a; }
+  .wa-left { font-size: 9px; letter-spacing: .3em; color: #777; text-transform: uppercase; }
+  .wa-right { font-size: 9px; letter-spacing: .3em; color: #E8601C; text-transform: uppercase; }
+
+  /* INNER HEADER */
+  .inner-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.06);
+    background: rgba(17,17,17,.97); position: sticky; top: 0; z-index: 50;
+  }
+  .back-btn {
+    background: none; border: 1px solid rgba(232,96,28,.4); border-radius: 30px;
+    padding: 7px 16px; font-size: 10px; letter-spacing: .25em;
+    text-transform: uppercase; color: #E8601C; cursor: pointer;
+  }
+  .back-btn:active { background: rgba(232,96,28,.1); }
+  .header-title { font-size: 10px; letter-spacing: .45em; color: #f0ede8; text-transform: uppercase; }
+  .header-tag { font-size: 9px; letter-spacing: .2em; color: #777; text-transform: uppercase; min-width: 50px; text-align: right; }
+
+  /* INNER CONTENT */
+  .inner-content { padding: 28px 16px 16px; }
+  .section-eye { font-size: 9px; letter-spacing: .4em; color: #E8601C; text-transform: uppercase; margin-bottom: 10px; }
+  .section-title { font-size: 32px; font-weight: 700; color: #fafafa; letter-spacing: -.01em; margin-bottom: 24px; }
+  .section-title em { font-style: italic; color: #E8601C; }
+
+  .cards { padding: 0 16px 40px; display: flex; flex-direction: column; gap: 10px; }
+
+  /* CAR CARD */
+  .car-card {
+    border-radius: 22px; overflow: hidden; position: relative;
+    height: 150px; background: #1a1a1a; cursor: pointer;
+    transition: transform .18s;
+  }
+  .car-card:active { transform: scale(0.985); outline: 1.5px solid #E8601C; }
+  .car-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.4) saturate(.5); }
+  .car-card-grad { position: absolute; inset: 0; background: linear-gradient(to right, rgba(14,14,14,.92) 0%, transparent 65%); }
+  .car-card-body { position: absolute; inset: 0; padding: 20px 22px; display: flex; flex-direction: column; justify-content: center; }
+  .car-name { font-size: 22px; font-weight: 600; color: #fafafa; margin-bottom: 3px; }
+  .car-meta { font-size: 8px; letter-spacing: .2em; color: #777; margin-bottom: 14px; }
+  .car-btn {
+    display: inline-flex; align-items: center; font-size: 8px; letter-spacing: .3em;
+    text-transform: uppercase; color: #E8601C; border: 1px solid rgba(232,96,28,.4);
+    border-radius: 12px; padding: 5px 12px; background: rgba(232,96,28,.08);
+    text-decoration: none; width: fit-content;
+  }
+
+  /* HOME CARD */
+  .home-card { border-radius: 22px; overflow: hidden; background: #1a1a1a; cursor: pointer; transition: transform .18s; }
+  .home-card:active { transform: scale(0.985); outline: 1.5px solid #E8601C; }
+  .home-img { position: relative; height: 150px; }
+  .home-img img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.55); }
+  .home-badge { position: absolute; top: 12px; left: 0; background: #E8601C; color: #fff; font-size: 7px; letter-spacing: .2em; text-transform: uppercase; padding: 4px 12px; }
+  .home-body { padding: 16px 18px 18px; }
+  .home-name { font-size: 20px; font-weight: 600; color: #fafafa; margin-bottom: 2px; }
+  .home-loc { font-size: 8px; letter-spacing: .2em; color: #777; margin-bottom: 12px; }
+  .home-stats { display: flex; gap: 18px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.06); margin-bottom: 14px; }
+  .stat-num { font-size: 20px; font-weight: 600; color: #fafafa; }
+  .stat-lbl { font-size: 7px; letter-spacing: .15em; color: #777; text-transform: uppercase; }
+  .avail-btn { width: 100%; padding: 10px; background: none; border: 1px solid rgba(232,96,28,.35); border-radius: 12px; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: #E8601C; cursor: pointer; }
+  .avail-btn:active { background: rgba(232,96,28,.1); }
+
+  /* LINK TILE */
+  .link-tile {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 22px; border-radius: 18px; background: #1a1a1a;
+    border: 1px solid rgba(232,96,28,.2); text-decoration: none; cursor: pointer;
+  }
+  .link-tile:active { background: #222; }
+  .link-tile-label { font-size: 9px; letter-spacing: .3em; color: #f0ede8; text-transform: uppercase; }
+  .link-tile-arrow { font-size: 14px; color: #E8601C; }
+
+  /* AIRBNB */
+  .airbnb-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+  .airbnb-icon { font-size: 52px; margin-bottom: 20px; opacity: .4; }
+  .airbnb-title { font-size: 32px; font-weight: 700; color: #fafafa; margin-bottom: 10px; }
+  .airbnb-sub { font-size: 9px; letter-spacing: .3em; color: #777; text-transform: uppercase; margin-bottom: 8px; }
+  .airbnb-loc { font-size: 9px; letter-spacing: .3em; color: #777; text-transform: uppercase; margin-bottom: 32px; }
+
+  /* MODAL */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: flex-end; justify-content: center; z-index: 200; }
+  .modal-bg.open { display: flex; }
+  .modal { background: #1a1a1a; border-radius: 26px 26px 0 0; width: 100%; max-width: 500px; padding: 26px 20px 40px; border-top: 3px solid #E8601C; position: relative; }
+  .modal-handle { width: 34px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.12); margin: 0 auto 22px; }
+  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #777; font-size: 24px; cursor: pointer; line-height: 1; }
+  .modal-eye { font-size: 8px; letter-spacing: .4em; text-transform: uppercase; color: #E8601C; margin-bottom: 6px; }
+  .modal-title { font-size: 20px; font-weight: 600; color: #fafafa; margin-bottom: 22px; }
+  .modal-note { font-size: 9px; letter-spacing: .25em; color: #777; text-align: center; padding: 24px 0; text-transform: uppercase; }
+  .modal-wa { width: 100%; padding: 14px; background: #E8601C; border: none; border-radius: 14px; font-size: 9px; letter-spacing: .4em; text-transform: uppercase; color: #fff; cursor: pointer; margin-top: 8px; }
+  .modal-wa:active { background: #FF7B38; }
+
+  /* EMPTY */
+  .empty { border-radius: 22px; background: #1a1a1a; padding: 40px 24px; text-align: center; }
+  .empty-icon { font-size: 38px; margin-bottom: 14px; opacity: .3; }
+  .empty-text { font-size: 16px; font-weight: 600; color: #fafafa; margin-bottom: 8px; }
+  .empty-sub { font-size: 9px; letter-spacing: .2em; color: #777; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<!-- ══ EDIT THESE ══════════════════════════════════════════ -->
+<script>
+  // 🔗 YOUR LINKS
+  const TURO_URL   = "https://turo.com";           // ← your Turo profile
+  const AIRBNB_URL = "https://airbnb.com";          // ← your Airbnb profile
+  const WHATSAPP   = "https://wa.me/14071234567";   // ← your WhatsApp number
+
+  // 🚗 YOUR CARS — add one line per car
+  const CARS = [
+    // { name: "Tesla Model S", year: "2024", img: "https://link-to-photo.jpg" },
+    // { name: "BMW M4",        year: "2024", img: "https://link-to-photo.jpg" },
+  ];
+
+  // 🏡 YOUR HOMES — add one line per property
+  const HOMES = [
+    // { name: "Pool Villa", area: "Dr. Phillips", beds: 4, baths: 3, img: "https://link-to-photo.jpg" },
+    // { name: "Lake House",  area: "Windermere",  beds: 3, baths: 2, img: "https://link-to-photo.jpg" },
+  ];
+</script>
+<!-- ══════════════════════════════════════════════════════ -->
+
+<!-- LANDING -->
+<div id="landing" class="page active">
+  <div class="logo">Orlando Superhost</div>
+  <div class="tiles">
+    <div class="tile tile-top" onclick="show('cars')">
+      <div class="tile-bar"></div>
+      <div class="tile-sub">Tap to see the fleet</div>
+      <div class="tile-label">Cars</div>
+      <div class="tile-arrow">→</div>
+    </div>
+    <div class="tile-row">
+      <div class="tile tile-half" onclick="show('homes')">
+        <div class="tile-bar"></div>
+        <div class="tile-sub">Rentals</div>
+        <div class="tile-label">Homes</div>
+        <div class="tile-arrow">→</div>
+      </div>
+      <div class="tile tile-half" onclick="show('airbnb')">
+        <div class="tile-bar"></div>
+        <div class="tile-sub">Short stays</div>
+        <div class="tile-label">Airbnb</div>
+        <div class="tile-arrow">→</div>
+      </div>
+    </div>
+    <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
+      <div class="wa-left">Questions?</div>
+      <div class="wa-right">WhatsApp Us →</div>
+    </div>
+  </div>
+</div>
+
+<!-- CARS -->
+<div id="cars" class="page">
+  <div class="inner-header">
+    <button class="back-btn" onclick="show('landing')">← Back</button>
+    <div class="header-title">Orlando Superhost</div>
+    <div class="header-tag">Cars</div>
+  </div>
+  <div class="inner-content">
+    <div class="section-eye">Our Fleet · Orlando FL</div>
+    <div class="section-title">Luxury <em>Cars</em></div>
+  </div>
+  <div class="cards" id="cars-list"></div>
+</div>
+
+<!-- HOMES -->
+<div id="homes" class="page">
+  <div class="inner-header">
+    <button class="back-btn" onclick="show('landing')">← Back</button>
+    <div class="header-title">Orlando Superhost</div>
+    <div class="header-tag">Homes</div>
+  </div>
+  <div class="inner-content">
+    <div class="section-eye">Rentals · Orlando FL</div>
+    <div class="section-title">Our <em>Homes</em></div>
+  </div>
+  <div class="cards" id="homes-list"></div>
+</div>
+
+<!-- AIRBNB -->
+<div id="airbnb" class="page">
+  <div class="inner-header">
+    <button class="back-btn" onclick="show('landing')">← Back</button>
+    <div class="header-title">Orlando Superhost</div>
+    <div class="header-tag">Airbnb</div>
+  </div>
+  <div class="airbnb-center">
+    <div class="airbnb-icon">🏠</div>
+    <div class="airbnb-title">Superhost</div>
+    <div class="airbnb-sub">Verified · 5-Star · Instant Book</div>
+    <div class="airbnb-loc">Orlando, Florida</div>
+    <a id="airbnb-link" href="#" target="_blank" class="link-tile" style="max-width:300px">
+      <span class="link-tile-label">View all listings on Airbnb</span>
+      <span class="link-tile-arrow">→</span>
+    </a>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-eye">Availability</div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-note">Contact us for available dates</div>
+    <button class="modal-wa" onclick="window.open(WHATSAPP,'_blank')">Message Us on WhatsApp →</button>
+  </div>
+</div>
+
+<script>
+  // navigation
+  function show(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // modal
+  function openModal(name) {
+    document.getElementById('modal-title').textContent = name;
+    document.getElementById('modal').classList.add('open');
+  }
+  function closeModal(e) {
+    if (!e || e.target === document.getElementById('modal')) {
+      document.getElementById('modal').classList.remove('open');
+    }
+  }
+
+  // set airbnb link
+  document.getElementById('airbnb-link').href = AIRBNB_URL;
+
+  // render cars
+  const carsList = document.getElementById('cars-list');
+  if (CARS.length === 0) {
+    carsList.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🚗</div>
+        <div class="empty-text">Your cars will show here</div>
+        <div class="empty-sub">Add your vehicles at the top of this file</div>
+      </div>`;
+  } else {
+    CARS.forEach(c => {
+      carsList.innerHTML += `
+        <div class="car-card">
+          ${c.img ? `<img src="${c.img}" alt="${c.name}" />` : ''}
+          <div class="car-card-grad"></div>
+          <div class="car-card-body">
+            <div class="car-name">${c.name}</div>
+            <div class="car-meta">${c.year}</div>
+            <a href="${TURO_URL}" target="_blank" class="car-btn">Book on Turo →</a>
+          </div>
+        </div>`;
+    });
+  }
+  carsList.innerHTML += `
+    <a href="${TURO_URL}" target="_blank" class="link-tile">
+      <span class="link-tile-label">See all cars on Turo</span>
+      <span class="link-tile-arrow">→</span>
+    </a>`;
+
+  // render homes
+  const homesList = document.getElementById('homes-list');
+  if (HOMES.length === 0) {
+    homesList.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🏡</div>
+        <div class="empty-text">Your homes will show here</div>
+        <div class="empty-sub">Add your properties at the top of this file</div>
+      </div>`;
+  } else {
+    HOMES.forEach(h => {
+      homesList.innerHTML += `
+        <div class="home-card">
+          <div class="home-img">
+            ${h.img ? `<img src="${h.img}" alt="${h.name}" />` : '<div style="width:100%;height:100%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.3">🏡</div>'}
+            <div class="home-badge">Available</div>
+          </div>
+          <div class="home-body">
+            <div class="home-name">${h.name}</div>
+            <div class="home-loc">${h.area} · Orlando, FL</div>
+            <div class="home-stats">
+              <div><div class="stat-num">${h.beds}</div><div class="stat-lbl">Beds</div></div>
+              <div><div class="stat-num">${h.baths}</div><div class="stat-lbl">Baths</div></div>
+            </div>
+            <button class="avail-btn" onclick="openModal('${h.name}')">Check Availability →</button>
+          </div>
+        </div>`;
+    });
+  }
+</script>
+</body>
+</html>
