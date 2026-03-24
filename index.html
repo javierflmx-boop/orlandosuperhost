@@ -1,340 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Orlando Superhost</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { background: #111; font-family: system-ui, -apple-system, sans-serif; color: #f0ede8; min-height: 100vh; }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:#1a1a1a;font-family:system-ui,-apple-system,sans-serif;color:#fff;overflow-x:hidden}
 
-  /* PAGES */
-  .page { display: none; min-height: 100vh; }
-  .page.active { display: flex; flex-direction: column; }
+  .page{display:none;min-height:100vh;flex-direction:column}
+  .page.active{display:flex}
 
-  /* LOGO */
-  .logo { text-align: center; padding: 28px 0 18px; font-size: 11px; font-weight: 300; letter-spacing: .55em; color: #E8601C; text-transform: uppercase; }
+  /* ── LANDING ── */
+  .top-bar{display:flex;justify-content:space-between;align-items:center;padding:52px 24px 16px}
+  .top-bar span{font-size:11px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.4);text-transform:uppercase}
 
-  /* LANDING TILES */
-  .tiles { display: flex; flex-direction: column; gap: 10px; padding: 0 16px 24px; max-width: 500px; margin: 0 auto; width: 100%; }
+  .tiles-wrap{display:flex;flex-direction:column;gap:3px;flex:1;padding:0 3px 60px}
 
-  .tile {
-    border-radius: 26px; background: #1a1a1a; cursor: pointer;
-    position: relative; overflow: hidden;
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 24px; border: 2px solid transparent;
-    transition: transform .18s ease, border-color .18s ease;
-    -webkit-user-select: none; user-select: none;
-  }
-  .tile:active { transform: scale(0.96); border-color: #E8601C; }
-  .tile-top { height: 210px; }
-  .tile-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .tile-half { height: 180px; }
+  .tile{position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:22px 24px 20px;transition:filter .18s;min-height:128px}
+  .tile:active{filter:brightness(1.18)}
+  .tile-cars  {background:#C85A3A;flex:1.1}
+  .tile-homes {background:#787878;flex:1}
+  .tile-airbnb{background:#383838;flex:1}
+  .tile::after{content:'';position:absolute;bottom:0;right:0;width:55%;height:100%;background:rgba(255,255,255,.06);clip-path:polygon(30% 100%,60% 40%,80% 65%,100% 20%,100% 100%)}
 
-  .tile-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #E8601C; opacity: 0; transition: opacity .18s; }
-  .tile:active .tile-bar { opacity: 1; }
+  .tile-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .tile-name{font-size:15px;font-weight:400;letter-spacing:.03em;color:rgba(255,255,255,.9)}
+  .circle-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(255,255,255,.7);position:relative;z-index:2;flex-shrink:0}
 
-  .tile-sub { font-size: 9px; letter-spacing: .35em; color: #E8601C; text-transform: uppercase; margin-bottom: 8px; }
-  .tile-label { font-size: 44px; font-weight: 700; color: #fafafa; letter-spacing: -.02em; line-height: 1; }
-  .tile-arrow { position: absolute; bottom: 20px; right: 22px; font-size: 18px; color: rgba(232,96,28,.4); }
+  .tile-bottom{display:flex;justify-content:space-between;align-items:flex-end}
+  .tile-number{font-size:52px;font-weight:700;color:rgba(255,255,255,.95);line-height:1;letter-spacing:-.02em}
+  .tile-avail{font-size:9px;font-weight:300;letter-spacing:.25em;color:rgba(255,255,255,.5);text-transform:uppercase;align-self:flex-end;padding-bottom:6px}
 
-  /* WHATSAPP STRIP */
-  .wa-strip {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 15px 22px; border-radius: 18px; background: #222;
-    cursor: pointer; border: 1px solid rgba(232,96,28,.15);
-    -webkit-user-select: none; user-select: none;
-  }
-  .wa-strip:active { background: #2a2a2a; }
-  .wa-left { font-size: 9px; letter-spacing: .3em; color: #777; text-transform: uppercase; }
-  .wa-right { font-size: 9px; letter-spacing: .3em; color: #E8601C; text-transform: uppercase; }
+  /* ── INNER HEADER ── */
+  .inner-header{display:flex;align-items:center;justify-content:space-between;padding:52px 24px 16px}
+  .back-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer;padding:4px;line-height:1}
+  .h-title{font-size:11px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.4);text-transform:uppercase}
 
-  /* INNER HEADER */
-  .inner-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.06);
-    background: rgba(17,17,17,.97); position: sticky; top: 0; z-index: 50;
-  }
-  .back-btn {
-    background: none; border: 1px solid rgba(232,96,28,.4); border-radius: 30px;
-    padding: 7px 16px; font-size: 10px; letter-spacing: .25em;
-    text-transform: uppercase; color: #E8601C; cursor: pointer;
-  }
-  .back-btn:active { background: rgba(232,96,28,.1); }
-  .header-title { font-size: 10px; letter-spacing: .45em; color: #f0ede8; text-transform: uppercase; }
-  .header-tag { font-size: 9px; letter-spacing: .2em; color: #777; text-transform: uppercase; min-width: 50px; text-align: right; }
+  .section-eye{font-size:9px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:6px;padding:0 24px}
+  .section-ttl{font-size:30px;font-weight:700;color:#fff;letter-spacing:-.01em;padding:0 24px;margin-bottom:18px}
 
-  /* INNER CONTENT */
-  .inner-content { padding: 28px 16px 16px; }
-  .section-eye { font-size: 9px; letter-spacing: .4em; color: #E8601C; text-transform: uppercase; margin-bottom: 10px; }
-  .section-title { font-size: 32px; font-weight: 700; color: #fafafa; letter-spacing: -.01em; margin-bottom: 24px; }
-  .section-title em { font-style: italic; color: #E8601C; }
+  .cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
 
-  .cards { padding: 0 16px 40px; display: flex; flex-direction: column; gap: 10px; }
+  /* ── CAR CARD ── */
+  .car-card{position:relative;overflow:hidden;min-height:138px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:22px 24px 20px;transition:filter .18s}
+  .car-card:active{filter:brightness(1.15)}
+  .car-card::after{content:'';position:absolute;bottom:0;right:0;width:55%;height:100%;background:rgba(255,255,255,.06);clip-path:polygon(30% 100%,60% 40%,80% 65%,100% 20%,100% 100%)}
+  .car-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.3) saturate(.4);mix-blend-mode:multiply}
+  .car-z{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:space-between;height:100%;gap:14px}
+  .car-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .car-name{font-size:18px;font-weight:600;color:#fff}
+  .car-year{font-size:9px;letter-spacing:.25em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:3px}
+  .car-bot{display:flex;justify-content:space-between;align-items:center}
+  .car-price{font-size:22px;font-weight:700;color:#fff}
+  .car-price-lbl{font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:2px}
+  .turo-btn{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:8px 18px;text-decoration:none;background:rgba(255,255,255,.08)}
 
-  /* CAR CARD */
-  .car-card {
-    border-radius: 22px; overflow: hidden; position: relative;
-    height: 150px; background: #1a1a1a; cursor: pointer;
-    transition: transform .18s;
-  }
-  .car-card:active { transform: scale(0.985); outline: 1.5px solid #E8601C; }
-  .car-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(.4) saturate(.5); }
-  .car-card-grad { position: absolute; inset: 0; background: linear-gradient(to right, rgba(14,14,14,.92) 0%, transparent 65%); }
-  .car-card-body { position: absolute; inset: 0; padding: 20px 22px; display: flex; flex-direction: column; justify-content: center; }
-  .car-name { font-size: 22px; font-weight: 600; color: #fafafa; margin-bottom: 3px; }
-  .car-meta { font-size: 8px; letter-spacing: .2em; color: #777; margin-bottom: 14px; }
-  .car-btn {
-    display: inline-flex; align-items: center; font-size: 8px; letter-spacing: .3em;
-    text-transform: uppercase; color: #E8601C; border: 1px solid rgba(232,96,28,.4);
-    border-radius: 12px; padding: 5px 12px; background: rgba(232,96,28,.08);
-    text-decoration: none; width: fit-content;
-  }
+  /* ── HOME CARD ── */
+  .home-card{overflow:hidden;cursor:pointer;transition:filter .18s}
+  .home-card:active{filter:brightness(1.1)}
+  .home-img{position:relative;height:155px}
+  .home-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+  .home-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.3}
+  .home-badge{position:absolute;top:12px;left:0;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px;font-weight:400}
+  .badge-green{background:#2d7a4f;color:#fff}
+  .badge-orange{background:#C85A3A;color:#fff}
+  .home-body{padding:18px 22px 20px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+  .home-body::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:100%;background:rgba(255,255,255,.04);clip-path:polygon(40% 100%,70% 30%,100% 50%,100% 100%)}
+  .home-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .home-name{font-size:17px;font-weight:600;color:#fff}
+  .home-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:3px}
+  .home-stats{display:flex;gap:20px}
+  .stat-n{font-size:24px;font-weight:700;color:#fff;line-height:1}
+  .stat-l{font-size:7px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
+  .avail-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.8);cursor:pointer;width:100%;position:relative;z-index:2}
+  .avail-btn:active{background:rgba(255,255,255,.2)}
 
-  /* HOME CARD */
-  .home-card { border-radius: 22px; overflow: hidden; background: #1a1a1a; cursor: pointer; transition: transform .18s; }
-  .home-card:active { transform: scale(0.985); outline: 1.5px solid #E8601C; }
-  .home-img { position: relative; height: 150px; }
-  .home-img img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.55); }
-  .home-badge { position: absolute; top: 12px; left: 0; background: #E8601C; color: #fff; font-size: 7px; letter-spacing: .2em; text-transform: uppercase; padding: 4px 12px; }
-  .home-body { padding: 16px 18px 18px; }
-  .home-name { font-size: 20px; font-weight: 600; color: #fafafa; margin-bottom: 2px; }
-  .home-loc { font-size: 8px; letter-spacing: .2em; color: #777; margin-bottom: 12px; }
-  .home-stats { display: flex; gap: 18px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.06); margin-bottom: 14px; }
-  .stat-num { font-size: 20px; font-weight: 600; color: #fafafa; }
-  .stat-lbl { font-size: 7px; letter-spacing: .15em; color: #777; text-transform: uppercase; }
-  .avail-btn { width: 100%; padding: 10px; background: none; border: 1px solid rgba(232,96,28,.35); border-radius: 12px; font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: #E8601C; cursor: pointer; }
-  .avail-btn:active { background: rgba(232,96,28,.1); }
+  /* ── AIRBNB PAGE ── */
+  .airbnb-cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
+  .airbnb-card{overflow:hidden;cursor:pointer;transition:filter .18s}
+  .airbnb-card:active{filter:brightness(1.1)}
+  .ab-img{position:relative;height:155px}
+  .ab-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+  .ab-badge{position:absolute;top:12px;left:0;background:#FF5A5F;color:#fff;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
+  .ab-body{background:#2e2e2e;padding:18px 22px 20px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+  .ab-body::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:100%;background:rgba(255,255,255,.03);clip-path:polygon(40% 100%,70% 30%,100% 50%,100% 100%)}
+  .ab-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .ab-name{font-size:17px;font-weight:600;color:#fff}
+  .ab-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:3px}
+  .ab-row{display:flex;justify-content:space-between;align-items:center}
+  .ab-price{font-size:22px;font-weight:700;color:#fff}
+  .ab-price-lbl{font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
+  .ab-stars{font-size:11px;color:#FFD700;letter-spacing:.1em}
+  .ab-link{display:block;background:#FF5A5F;border:none;border-radius:20px;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#fff;cursor:pointer;width:100%;text-align:center;text-decoration:none;position:relative;z-index:2}
+  .ab-link:active{background:#e04a4f}
 
-  /* LINK TILE */
-  .link-tile {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 22px; border-radius: 18px; background: #1a1a1a;
-    border: 1px solid rgba(232,96,28,.2); text-decoration: none; cursor: pointer;
-  }
-  .link-tile:active { background: #222; }
-  .link-tile-label { font-size: 9px; letter-spacing: .3em; color: #f0ede8; text-transform: uppercase; }
-  .link-tile-arrow { font-size: 14px; color: #E8601C; }
+  /* ── BOTTOM WA STRIP ── */
+  .wa-strip{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,.07);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;z-index:10}
+  .wa-strip:active{background:#1a1a1a}
+  .wa-l{font-size:9px;letter-spacing:.3em;color:rgba(255,255,255,.3);text-transform:uppercase}
+  .wa-r{font-size:9px;letter-spacing:.3em;color:#C85A3A;text-transform:uppercase}
 
-  /* AIRBNB */
-  .airbnb-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
-  .airbnb-icon { font-size: 52px; margin-bottom: 20px; opacity: .4; }
-  .airbnb-title { font-size: 32px; font-weight: 700; color: #fafafa; margin-bottom: 10px; }
-  .airbnb-sub { font-size: 9px; letter-spacing: .3em; color: #777; text-transform: uppercase; margin-bottom: 8px; }
-  .airbnb-loc { font-size: 9px; letter-spacing: .3em; color: #777; text-transform: uppercase; margin-bottom: 32px; }
-
-  /* MODAL */
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: none; align-items: flex-end; justify-content: center; z-index: 200; }
-  .modal-bg.open { display: flex; }
-  .modal { background: #1a1a1a; border-radius: 26px 26px 0 0; width: 100%; max-width: 500px; padding: 26px 20px 40px; border-top: 3px solid #E8601C; position: relative; }
-  .modal-handle { width: 34px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.12); margin: 0 auto 22px; }
-  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; color: #777; font-size: 24px; cursor: pointer; line-height: 1; }
-  .modal-eye { font-size: 8px; letter-spacing: .4em; text-transform: uppercase; color: #E8601C; margin-bottom: 6px; }
-  .modal-title { font-size: 20px; font-weight: 600; color: #fafafa; margin-bottom: 22px; }
-  .modal-note { font-size: 9px; letter-spacing: .25em; color: #777; text-align: center; padding: 24px 0; text-transform: uppercase; }
-  .modal-wa { width: 100%; padding: 14px; background: #E8601C; border: none; border-radius: 14px; font-size: 9px; letter-spacing: .4em; text-transform: uppercase; color: #fff; cursor: pointer; margin-top: 8px; }
-  .modal-wa:active { background: #FF7B38; }
-
-  /* EMPTY */
-  .empty { border-radius: 22px; background: #1a1a1a; padding: 40px 24px; text-align: center; }
-  .empty-icon { font-size: 38px; margin-bottom: 14px; opacity: .3; }
-  .empty-text { font-size: 16px; font-weight: 600; color: #fafafa; margin-bottom: 8px; }
-  .empty-sub { font-size: 9px; letter-spacing: .2em; color: #777; text-transform: uppercase; }
+  /* ── MODAL ── */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center;z-index:200}
+  .modal-bg.open{display:flex}
+  .modal{background:#242424;border-radius:24px 24px 0 0;width:100%;max-width:500px;padding:24px 22px 44px;position:relative}
+  .modal-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+  .modal-handle{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 22px}
+  .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:rgba(255,255,255,.35);font-size:26px;cursor:pointer;line-height:1}
+  .modal-eye{font-size:8px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:6px}
+  .modal-name{font-size:20px;font-weight:600;color:#fff;margin-bottom:24px}
+  .slots{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+  .slot{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#2e2e2e;border-radius:14px;border-left:3px solid transparent}
+  .slot-dates{font-size:13px;font-weight:400;color:#fff}
+  .slot-nights{font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
+  .slot-price{font-size:22px;font-weight:700}
+  .modal-book{width:100%;padding:14px;border:none;border-radius:14px;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#fff;cursor:pointer;margin-top:4px}
+  .modal-book:active{filter:brightness(1.15)}
 </style>
 </head>
 <body>
 
-<!-- ══ EDIT THESE ══════════════════════════════════════════ -->
 <script>
-  // 🔗 YOUR LINKS
-  const TURO_URL   = "https://turo.com";           // ← your Turo profile
-  const AIRBNB_URL = "https://airbnb.com";          // ← your Airbnb profile
-  const WHATSAPP   = "https://wa.me/14071234567";   // ← your WhatsApp number
+  // 🔗 YOUR LINKS — replace when ready
+  const TURO_URL   = "https://turo.com";
+  const AIRBNB_URL = "https://airbnb.com";
+  const WHATSAPP   = "https://wa.me/14071234567";
 
-  // 🚗 YOUR CARS — add one line per car
+  // 🚗 SAMPLE CARS — replace with yours
   const CARS = [
-    // { name: "Tesla Model S", year: "2024", img: "https://link-to-photo.jpg" },
-    // { name: "BMW M4",        year: "2024", img: "https://link-to-photo.jpg" },
+    { name:"Tesla Model S",      year:"2024 · Electric · Autopilot", price:"$149/day", color:"#C85A3A", img:"https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=70" },
+    { name:"BMW M4 Competition", year:"2024 · 503 HP · Sport",       price:"$199/day", color:"#A04830", img:"https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=70" },
+    { name:"Range Rover Sport",  year:"2024 · Luxury SUV",           price:"$179/day", color:"#883C28", img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=700&q=70" },
   ];
 
-  // 🏡 YOUR HOMES — add one line per property
+  // 🏡 SAMPLE HOMES — replace with yours
   const HOMES = [
-    // { name: "Pool Villa", area: "Dr. Phillips", beds: 4, baths: 3, img: "https://link-to-photo.jpg" },
-    // { name: "Lake House",  area: "Windermere",  beds: 3, baths: 2, img: "https://link-to-photo.jpg" },
+    { name:"Luxury Pool Villa",  area:"Dr. Phillips",  beds:5, baths:4, price:"$320/night", badge:"Available",  badgeClass:"badge-green",  color:"#696969", img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=70",
+      slots:[{d:"Apr 1 – Apr 7",n:"6 nights",p:"$1,920"},{d:"Apr 14 – Apr 21",n:"7 nights",p:"$2,240"},{d:"May 3 – May 10",n:"7 nights",p:"$2,240"}] },
+    { name:"Modern Lake Estate", area:"Windermere",    beds:4, baths:3, price:"$280/night", badge:"Available",  badgeClass:"badge-green",  color:"#575757", img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=70",
+      slots:[{d:"Apr 5 – Apr 12",n:"7 nights",p:"$1,960"},{d:"May 1 – May 8",n:"7 nights",p:"$1,960"},{d:"Jun 2 – Jun 9",n:"7 nights",p:"$2,100"}] },
+    { name:"Garden Retreat",     area:"College Park",  beds:3, baths:2, price:"$180/night", badge:"2 Left",     badgeClass:"badge-orange", color:"#484848", img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&q=70",
+      slots:[{d:"Apr 10 – Apr 14",n:"4 nights",p:"$720"},{d:"May 6 – May 10",n:"4 nights",p:"$720"}] },
+  ];
+
+  // 🏠 SAMPLE AIRBNB LISTINGS — replace with yours
+  const AIRBNBS = [
+    { name:"Downtown Loft",     area:"Downtown Orlando", price:"$120/night", rating:"4.97", reviews:"134", img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70" },
+    { name:"Pool House Oasis",  area:"Dr. Phillips",     price:"$210/night", rating:"5.0",  reviews:"89",  img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70" },
+    { name:"Cozy Lake View",    area:"Windermere",       price:"$155/night", rating:"4.95", reviews:"212", img:"https://images.unsplash.com/photo-1501183638710-841dd1904471?w=700&q=70" },
   ];
 </script>
-<!-- ══════════════════════════════════════════════════════ -->
 
-<!-- LANDING -->
+<!-- ══ LANDING ══ -->
 <div id="landing" class="page active">
-  <div class="logo">Orlando Superhost</div>
-  <div class="tiles">
-    <div class="tile tile-top" onclick="show('cars')">
-      <div class="tile-bar"></div>
-      <div class="tile-sub">Tap to see the fleet</div>
-      <div class="tile-label">Cars</div>
-      <div class="tile-arrow">→</div>
-    </div>
-    <div class="tile-row">
-      <div class="tile tile-half" onclick="show('homes')">
-        <div class="tile-bar"></div>
-        <div class="tile-sub">Rentals</div>
-        <div class="tile-label">Homes</div>
-        <div class="tile-arrow">→</div>
+  <div class="top-bar">
+    <span>Orlando</span>
+    <span>Superhost</span>
+  </div>
+  <div class="tiles-wrap">
+    <div class="tile tile-cars" onclick="show('cars')">
+      <div class="tile-top">
+        <div class="tile-name">Cars</div>
+        <div class="circle-btn">→</div>
       </div>
-      <div class="tile tile-half" onclick="show('airbnb')">
-        <div class="tile-bar"></div>
-        <div class="tile-sub">Short stays</div>
-        <div class="tile-label">Airbnb</div>
-        <div class="tile-arrow">→</div>
+      <div class="tile-bottom">
+        <div class="tile-number" id="cnt-cars">3</div>
+        <div class="tile-avail">Available</div>
       </div>
     </div>
-    <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
-      <div class="wa-left">Questions?</div>
-      <div class="wa-right">WhatsApp Us →</div>
+    <div class="tile tile-homes" onclick="show('homes')">
+      <div class="tile-top">
+        <div class="tile-name">Homes</div>
+        <div class="circle-btn">→</div>
+      </div>
+      <div class="tile-bottom">
+        <div class="tile-number" id="cnt-homes">3</div>
+        <div class="tile-avail">Available</div>
+      </div>
     </div>
+    <div class="tile tile-airbnb" onclick="show('airbnb')">
+      <div class="tile-top">
+        <div class="tile-name">Airbnb</div>
+        <div class="circle-btn">→</div>
+      </div>
+      <div class="tile-bottom">
+        <div class="tile-number">5★</div>
+        <div class="tile-avail">Superhost</div>
+      </div>
+    </div>
+  </div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
+    <div class="wa-l">Questions?</div>
+    <div class="wa-r">WhatsApp Us →</div>
   </div>
 </div>
 
-<!-- CARS -->
+<!-- ══ CARS ══ -->
 <div id="cars" class="page">
   <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">← Back</button>
-    <div class="header-title">Orlando Superhost</div>
-    <div class="header-tag">Cars</div>
+    <button class="back-btn" onclick="show('landing')">←</button>
+    <div class="h-title">Orlando Superhost</div>
+    <div style="width:40px"></div>
   </div>
-  <div class="inner-content">
-    <div class="section-eye">Our Fleet · Orlando FL</div>
-    <div class="section-title">Luxury <em>Cars</em></div>
-  </div>
+  <div class="section-eye" style="color:#C85A3A">Our Fleet · Orlando FL</div>
+  <div class="section-ttl">Cars</div>
   <div class="cards" id="cars-list"></div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
+    <div class="wa-l">Questions?</div>
+    <div class="wa-r">WhatsApp Us →</div>
+  </div>
 </div>
 
-<!-- HOMES -->
+<!-- ══ HOMES ══ -->
 <div id="homes" class="page">
   <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">← Back</button>
-    <div class="header-title">Orlando Superhost</div>
-    <div class="header-tag">Homes</div>
+    <button class="back-btn" onclick="show('landing')">←</button>
+    <div class="h-title">Orlando Superhost</div>
+    <div style="width:40px"></div>
   </div>
-  <div class="inner-content">
-    <div class="section-eye">Rentals · Orlando FL</div>
-    <div class="section-title">Our <em>Homes</em></div>
-  </div>
+  <div class="section-eye" style="color:#aaa">Rentals · Orlando FL</div>
+  <div class="section-ttl">Homes</div>
   <div class="cards" id="homes-list"></div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
+    <div class="wa-l">Questions?</div>
+    <div class="wa-r">WhatsApp Us →</div>
+  </div>
 </div>
 
-<!-- AIRBNB -->
+<!-- ══ AIRBNB ══ -->
 <div id="airbnb" class="page">
   <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">← Back</button>
-    <div class="header-title">Orlando Superhost</div>
-    <div class="header-tag">Airbnb</div>
+    <button class="back-btn" onclick="show('landing')">←</button>
+    <div class="h-title">Orlando Superhost</div>
+    <div style="width:40px"></div>
   </div>
-  <div class="airbnb-center">
-    <div class="airbnb-icon">🏠</div>
-    <div class="airbnb-title">Superhost</div>
-    <div class="airbnb-sub">Verified · 5-Star · Instant Book</div>
-    <div class="airbnb-loc">Orlando, Florida</div>
-    <a id="airbnb-link" href="#" target="_blank" class="link-tile" style="max-width:300px">
-      <span class="link-tile-label">View all listings on Airbnb</span>
-      <span class="link-tile-arrow">→</span>
-    </a>
+  <div class="section-eye" style="color:#FF5A5F">Short Stays · Orlando FL</div>
+  <div class="section-ttl">Airbnb</div>
+  <div class="airbnb-cards" id="airbnb-list"></div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
+    <div class="wa-l">Questions?</div>
+    <div class="wa-r">WhatsApp Us →</div>
   </div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-bg" id="modal" onclick="closeModal(event)">
+<!-- ══ MODAL ══ -->
+<div class="modal-bg" id="modal" onclick="closeMod(event)">
   <div class="modal">
+    <div class="modal-bar" id="modal-bar"></div>
     <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div class="modal-eye">Availability</div>
-    <div class="modal-title" id="modal-title"></div>
-    <div class="modal-note">Contact us for available dates</div>
-    <button class="modal-wa" onclick="window.open(WHATSAPP,'_blank')">Message Us on WhatsApp →</button>
+    <button class="modal-close" onclick="closeMod()">×</button>
+    <div class="modal-eye" id="modal-eye">Availability</div>
+    <div class="modal-name" id="modal-name"></div>
+    <div class="slots" id="modal-slots"></div>
+    <button class="modal-book" id="modal-book" onclick="window.open(WHATSAPP,'_blank')">Book via WhatsApp →</button>
   </div>
 </div>
 
 <script>
-  // navigation
-  function show(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  function show(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-    window.scrollTo(0, 0);
+    window.scrollTo(0,0);
   }
 
-  // modal
-  function openModal(name) {
-    document.getElementById('modal-title').textContent = name;
+  function openMod(name, slots, color){
+    document.getElementById('modal-name').textContent = name;
+    document.getElementById('modal-bar').style.background = color;
+    document.getElementById('modal-eye').style.color = color;
+    document.getElementById('modal-book').style.background = color;
+    const sl = document.getElementById('modal-slots');
+    sl.innerHTML = slots.map(s=>`
+      <div class="slot" style="border-left-color:${color}">
+        <div>
+          <div class="slot-dates">${s.d}</div>
+          <div class="slot-nights">${s.n}</div>
+        </div>
+        <div class="slot-price" style="color:${color}">${s.p}</div>
+      </div>`).join('');
     document.getElementById('modal').classList.add('open');
   }
-  function closeModal(e) {
-    if (!e || e.target === document.getElementById('modal')) {
+
+  function closeMod(e){
+    if(!e||e.target===document.getElementById('modal'))
       document.getElementById('modal').classList.remove('open');
-    }
   }
 
-  // set airbnb link
-  document.getElementById('airbnb-link').href = AIRBNB_URL;
+  // counts
+  document.getElementById('cnt-cars').textContent  = CARS.length;
+  document.getElementById('cnt-homes').textContent = HOMES.length;
 
-  // render cars
-  const carsList = document.getElementById('cars-list');
-  if (CARS.length === 0) {
-    carsList.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">🚗</div>
-        <div class="empty-text">Your cars will show here</div>
-        <div class="empty-sub">Add your vehicles at the top of this file</div>
-      </div>`;
-  } else {
-    CARS.forEach(c => {
-      carsList.innerHTML += `
-        <div class="car-card">
-          ${c.img ? `<img src="${c.img}" alt="${c.name}" />` : ''}
-          <div class="car-card-grad"></div>
-          <div class="car-card-body">
-            <div class="car-name">${c.name}</div>
-            <div class="car-meta">${c.year}</div>
-            <a href="${TURO_URL}" target="_blank" class="car-btn">Book on Turo →</a>
-          </div>
-        </div>`;
-    });
-  }
-  carsList.innerHTML += `
-    <a href="${TURO_URL}" target="_blank" class="link-tile">
-      <span class="link-tile-label">See all cars on Turo</span>
-      <span class="link-tile-arrow">→</span>
-    </a>`;
-
-  // render homes
-  const homesList = document.getElementById('homes-list');
-  if (HOMES.length === 0) {
-    homesList.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">🏡</div>
-        <div class="empty-text">Your homes will show here</div>
-        <div class="empty-sub">Add your properties at the top of this file</div>
-      </div>`;
-  } else {
-    HOMES.forEach(h => {
-      homesList.innerHTML += `
-        <div class="home-card">
-          <div class="home-img">
-            ${h.img ? `<img src="${h.img}" alt="${h.name}" />` : '<div style="width:100%;height:100%;background:#2a2a2a;display:flex;align-items:center;justify-content:center;font-size:32px;opacity:.3">🏡</div>'}
-            <div class="home-badge">Available</div>
-          </div>
-          <div class="home-body">
-            <div class="home-name">${h.name}</div>
-            <div class="home-loc">${h.area} · Orlando, FL</div>
-            <div class="home-stats">
-              <div><div class="stat-num">${h.beds}</div><div class="stat-lbl">Beds</div></div>
-              <div><div class="stat-num">${h.baths}</div><div class="stat-lbl">Baths</div></div>
+  // render CARS
+  const cl = document.getElementById('cars-list');
+  CARS.forEach(c=>{
+    cl.innerHTML+=`
+      <div class="car-card" style="background:${c.color}">
+        <img src="${c.img}" alt="${c.name}"/>
+        <div class="car-z">
+          <div class="car-top">
+            <div>
+              <div class="car-name">${c.name}</div>
+              <div class="car-year">${c.year}</div>
             </div>
-            <button class="avail-btn" onclick="openModal('${h.name}')">Check Availability →</button>
+            <div class="circle-btn">→</div>
           </div>
-        </div>`;
-    });
-  }
+          <div class="car-bot">
+            <div>
+              <div class="car-price">${c.price}</div>
+              <div class="car-price-lbl">Per day</div>
+            </div>
+            <a href="${TURO_URL}" target="_blank" class="turo-btn">Book on Turo →</a>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  // render HOMES
+  const hl = document.getElementById('homes-list');
+  HOMES.forEach(h=>{
+    hl.innerHTML+=`
+      <div class="home-card">
+        <div class="home-img" style="background:${h.color}">
+          <img src="${h.img}" alt="${h.name}"/>
+          <div class="home-badge ${h.badgeClass}">${h.badge}</div>
+        </div>
+        <div class="home-body" style="background:${h.color}">
+          <div class="home-top">
+            <div>
+              <div class="home-name">${h.name}</div>
+              <div class="home-loc">${h.area} · Orlando FL</div>
+            </div>
+            <div class="circle-btn">→</div>
+          </div>
+          <div class="home-stats">
+            <div><div class="stat-n">${h.beds}</div><div class="stat-l">Beds</div></div>
+            <div><div class="stat-n">${h.baths}</div><div class="stat-l">Baths</div></div>
+            <div><div class="stat-n">${h.price}</div><div class="stat-l">Per night</div></div>
+          </div>
+          <button class="avail-btn" onclick="openMod('${h.name}',HOMES[${HOMES.indexOf(h)}].slots,'${h.color}')">Check Availability →</button>
+        </div>
+      </div>`;
+  });
+
+  // render AIRBNB
+  const al = document.getElementById('airbnb-list');
+  AIRBNBS.forEach(a=>{
+    al.innerHTML+=`
+      <div class="airbnb-card">
+        <div class="ab-img">
+          <img src="${a.img}" alt="${a.name}"/>
+          <div class="ab-badge">Superhost</div>
+        </div>
+        <div class="ab-body">
+          <div class="ab-top">
+            <div>
+              <div class="ab-name">${a.name}</div>
+              <div class="ab-loc">${a.area}</div>
+            </div>
+            <div class="circle-btn" style="border-color:rgba(255,90,95,.4)">→</div>
+          </div>
+          <div class="ab-row">
+            <div>
+              <div class="ab-price">${a.price}</div>
+              <div class="ab-price-lbl">Per night</div>
+            </div>
+            <div style="text-align:right">
+              <div class="ab-stars">★ ${a.rating}</div>
+              <div style="font-size:8px;letter-spacing:.15em;color:rgba(255,255,255,.35);margin-top:2px">${a.reviews} reviews</div>
+            </div>
+          </div>
+          <a href="${AIRBNB_URL}" target="_blank" class="ab-link">Book on Airbnb →</a>
+        </div>
+      </div>`;
+  });
 </script>
 </body>
 </html>
