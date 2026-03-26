@@ -7,372 +7,622 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{background:#1a1a1a;font-family:system-ui,-apple-system,sans-serif;color:#fff;overflow-x:hidden}
-
   .page{display:none;min-height:100vh;flex-direction:column}
   .page.active{display:flex}
-
-  /* ── LANDING ── */
   .top-bar{display:flex;justify-content:space-between;align-items:center;padding:52px 24px 16px}
   .top-bar span{font-size:11px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.4);text-transform:uppercase}
-
   .tiles-wrap{display:flex;flex-direction:column;gap:3px;flex:1;padding:0 3px 60px}
-
   .tile{position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:22px 24px 20px;transition:filter .18s;min-height:128px}
   .tile:active{filter:brightness(1.18)}
-  .tile-cars  {background:#C85A3A;flex:1.1}
-  .tile-homes {background:#787878;flex:1}
+  .tile-cars{background:#C85A3A;flex:1.1}
+  .tile-homes{background:#787878;flex:1}
   .tile-airbnb{background:#383838;flex:1}
   .tile::after{content:'';position:absolute;bottom:0;right:0;width:55%;height:100%;background:rgba(255,255,255,.06);clip-path:polygon(30% 100%,60% 40%,80% 65%,100% 20%,100% 100%)}
-
   .tile-top{display:flex;justify-content:space-between;align-items:flex-start}
-  .tile-name{font-size:15px;font-weight:400;letter-spacing:.03em;color:rgba(255,255,255,.9)}
+  .tile-name{font-size:15px;font-weight:400;color:rgba(255,255,255,.9)}
   .circle-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(255,255,255,.7);position:relative;z-index:2;flex-shrink:0}
-
   .tile-bottom{display:flex;justify-content:space-between;align-items:flex-end}
   .tile-number{font-size:52px;font-weight:700;color:rgba(255,255,255,.95);line-height:1;letter-spacing:-.02em}
   .tile-avail{font-size:9px;font-weight:300;letter-spacing:.25em;color:rgba(255,255,255,.5);text-transform:uppercase;align-self:flex-end;padding-bottom:6px}
-
-  /* ── INNER HEADER ── */
-  .inner-header{display:flex;align-items:center;justify-content:space-between;padding:52px 24px 16px}
+  .admin-gear{position:absolute;bottom:14px;right:16px;font-size:18px;opacity:.2;cursor:pointer;z-index:5}
+  .inner-header{display:flex;align-items:center;justify-content:space-between;padding:48px 20px 14px;background:#1a1a1a;position:sticky;top:0;z-index:100}
   .back-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer;padding:4px;line-height:1}
   .h-title{font-size:11px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.4);text-transform:uppercase}
-
-  .section-eye{font-size:9px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:6px;padding:0 24px}
-  .section-ttl{font-size:30px;font-weight:700;color:#fff;letter-spacing:-.01em;padding:0 24px;margin-bottom:18px}
-
-  .cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
-
-  /* ── CAR CARD ── */
+  .view-toggle{display:flex;gap:3px;padding:0 3px 3px}
+  .toggle-btn{flex:1;padding:11px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
+  .toggle-btn.active{background:#787878;color:#fff}
+  .toggle-btn.inactive{background:#2a2a2a;color:rgba(255,255,255,.35)}
+  .map-wrap{flex:1;position:relative;overflow:hidden;background:#222;min-height:420px}
+  .map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px}
+  .pin{position:absolute;cursor:pointer;transform:translate(-50%,-50%);z-index:10;transition:transform .15s}
+  .pin:active{transform:translate(-50%,-50%) scale(1.15)}
+  .pin-bubble{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.2)}
+  .pin-dot{width:8px;height:8px;border-radius:50%;background:#fff;opacity:.8;flex-shrink:0}
+  .pin.avail .pin-bubble{background:#2d7a4f;color:#fff}
+  .pin.limited .pin-bubble{background:#C85A3A;color:#fff}
+  .pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;margin:0 auto}
+  .pin.avail .pin-tail{border-top:8px solid #2d7a4f}
+  .pin.limited .pin-tail{border-top:8px solid #C85A3A}
+  .map-label{position:absolute;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2);pointer-events:none}
+  .prop-sheet{position:fixed;bottom:0;left:0;right:0;background:#242424;border-radius:24px 24px 0 0;border-top:3px solid #787878;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94);z-index:300;max-width:500px;margin:0 auto;padding:22px 22px 48px;max-height:88vh;overflow-y:auto}
+  .prop-sheet.open{transform:translateY(0)}
+  .prop-handle{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:0 auto 18px}
+  .prop-close{position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,.35);font-size:26px;cursor:pointer;line-height:1}
+  .prop-img{width:100%;height:160px;object-fit:cover;border-radius:14px;margin-bottom:14px}
+  .prop-badge{display:inline-block;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:10px}
+  .badge-green{background:#2d7a4f;color:#fff}
+  .badge-orange{background:#C85A3A;color:#fff}
+  .prop-name{font-size:20px;font-weight:700;color:#fff;margin-bottom:3px}
+  .prop-area{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:14px}
+  .prop-stats{display:flex;gap:20px;padding:13px 0;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px}
+  .ps-n{font-size:22px;font-weight:700;color:#fff;line-height:1}
+  .ps-l{font-size:7px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
+  .slots-title{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px}
+  .slots{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+  .slot{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:#2e2e2e;border-radius:12px;border-left:3px solid #787878}
+  .slot-d{font-size:13px;color:#fff}
+  .slot-n{font-size:8px;letter-spacing:.15em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
+  .slot-p{font-size:20px;font-weight:700;color:#9a9a9a}
+  .prop-book{width:100%;padding:14px;background:#787878;border:none;border-radius:14px;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#fff;cursor:pointer}
+  .homes-list{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
+  .home-card{overflow:hidden;cursor:pointer}
+  .hc-img{position:relative;height:150px}
+  .hc-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+  .hc-badge{position:absolute;top:12px;left:0;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
+  .hc-body{padding:16px 20px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+  .hc-body::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:100%;background:rgba(255,255,255,.04);clip-path:polygon(40% 100%,70% 30%,100% 50%,100% 100%)}
+  .hc-top{display:flex;justify-content:space-between}
+  .hc-name{font-size:16px;font-weight:600;color:#fff}
+  .hc-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
+  .hc-stats{display:flex;gap:18px}
+  .hc-sn{font-size:20px;font-weight:700;color:#fff;line-height:1}
+  .hc-sl{font-size:7px;letter-spacing:.15em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
+  .hc-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:9px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.8);cursor:pointer;width:100%;position:relative;z-index:2}
+  .cars-cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
   .car-card{position:relative;overflow:hidden;min-height:138px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:22px 24px 20px;transition:filter .18s}
   .car-card:active{filter:brightness(1.15)}
   .car-card::after{content:'';position:absolute;bottom:0;right:0;width:55%;height:100%;background:rgba(255,255,255,.06);clip-path:polygon(30% 100%,60% 40%,80% 65%,100% 20%,100% 100%)}
-  .car-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.3) saturate(.4);mix-blend-mode:multiply}
-  .car-z{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:space-between;height:100%;gap:14px}
-  .car-top{display:flex;justify-content:space-between;align-items:flex-start}
+  .car-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.3) saturate(.4)}
+  .car-z{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px}
+  .car-top{display:flex;justify-content:space-between}
   .car-name{font-size:18px;font-weight:600;color:#fff}
-  .car-year{font-size:9px;letter-spacing:.25em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:3px}
+  .car-yr{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:3px}
   .car-bot{display:flex;justify-content:space-between;align-items:center}
-  .car-price{font-size:22px;font-weight:700;color:#fff}
-  .car-price-lbl{font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:2px}
-  .turo-btn{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:8px 18px;text-decoration:none;background:rgba(255,255,255,.08)}
-
-  /* ── HOME CARD ── */
-  .home-card{overflow:hidden;cursor:pointer;transition:filter .18s}
-  .home-card:active{filter:brightness(1.1)}
-  .home-img{position:relative;height:155px}
-  .home-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
-  .home-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;opacity:.3}
-  .home-badge{position:absolute;top:12px;left:0;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px;font-weight:400}
-  .badge-green{background:#2d7a4f;color:#fff}
-  .badge-orange{background:#C85A3A;color:#fff}
-  .home-body{padding:18px 22px 20px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-  .home-body::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:100%;background:rgba(255,255,255,.04);clip-path:polygon(40% 100%,70% 30%,100% 50%,100% 100%)}
-  .home-top{display:flex;justify-content:space-between;align-items:flex-start}
-  .home-name{font-size:17px;font-weight:600;color:#fff}
-  .home-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:3px}
-  .home-stats{display:flex;gap:20px}
-  .stat-n{font-size:24px;font-weight:700;color:#fff;line-height:1}
-  .stat-l{font-size:7px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
-  .avail-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.8);cursor:pointer;width:100%;position:relative;z-index:2}
-  .avail-btn:active{background:rgba(255,255,255,.2)}
-
-  /* ── AIRBNB PAGE ── */
-  .airbnb-cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
-  .airbnb-card{overflow:hidden;cursor:pointer;transition:filter .18s}
-  .airbnb-card:active{filter:brightness(1.1)}
-  .ab-img{position:relative;height:155px}
-  .ab-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
-  .ab-badge{position:absolute;top:12px;left:0;background:#FF5A5F;color:#fff;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
-  .ab-body{background:#2e2e2e;padding:18px 22px 20px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-  .ab-body::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:100%;background:rgba(255,255,255,.03);clip-path:polygon(40% 100%,70% 30%,100% 50%,100% 100%)}
-  .ab-top{display:flex;justify-content:space-between;align-items:flex-start}
-  .ab-name{font-size:17px;font-weight:600;color:#fff}
-  .ab-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:3px}
+  .turo-btn{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:8px 16px;text-decoration:none;background:rgba(255,255,255,.08)}
+  .ab-cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
+  .ab-card{overflow:hidden;cursor:pointer}
+  .ab-img-wrap{position:relative;height:150px}
+  .ab-img-wrap img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+  .ab-sup{position:absolute;top:12px;left:0;background:#FF5A5F;color:#fff;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
+  .ab-body{background:#2e2e2e;padding:16px 20px 18px;display:flex;flex-direction:column;gap:12px}
+  .ab-top{display:flex;justify-content:space-between}
+  .ab-name{font-size:16px;font-weight:600;color:#fff}
+  .ab-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
   .ab-row{display:flex;justify-content:space-between;align-items:center}
-  .ab-price{font-size:22px;font-weight:700;color:#fff}
-  .ab-price-lbl{font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
-  .ab-stars{font-size:11px;color:#FFD700;letter-spacing:.1em}
-  .ab-link{display:block;background:#FF5A5F;border:none;border-radius:20px;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#fff;cursor:pointer;width:100%;text-align:center;text-decoration:none;position:relative;z-index:2}
-  .ab-link:active{background:#e04a4f}
-
-  /* ── BOTTOM WA STRIP ── */
+  .ab-stars{font-size:12px;color:#FFD700}
+  .ab-rev{font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-top:2px}
+  .ab-link{display:block;background:#FF5A5F;border:none;border-radius:20px;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#fff;text-align:center;text-decoration:none}
   .wa-strip{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,.07);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;z-index:10}
-  .wa-strip:active{background:#1a1a1a}
   .wa-l{font-size:9px;letter-spacing:.3em;color:rgba(255,255,255,.3);text-transform:uppercase}
   .wa-r{font-size:9px;letter-spacing:.3em;color:#C85A3A;text-transform:uppercase}
+  #sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:299}
 
-  /* ── MODAL ── */
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:flex-end;justify-content:center;z-index:200}
-  .modal-bg.open{display:flex}
-  .modal{background:#242424;border-radius:24px 24px 0 0;width:100%;max-width:500px;padding:24px 22px 44px;position:relative}
-  .modal-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
-  .modal-handle{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.12);margin:0 auto 22px}
-  .modal-close{position:absolute;top:18px;right:18px;background:none;border:none;color:rgba(255,255,255,.35);font-size:26px;cursor:pointer;line-height:1}
-  .modal-eye{font-size:8px;letter-spacing:.4em;text-transform:uppercase;margin-bottom:6px}
-  .modal-name{font-size:20px;font-weight:600;color:#fff;margin-bottom:24px}
-  .slots{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
-  .slot{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#2e2e2e;border-radius:14px;border-left:3px solid transparent}
-  .slot-dates{font-size:13px;font-weight:400;color:#fff}
-  .slot-nights{font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
-  .slot-price{font-size:22px;font-weight:700}
-  .modal-book{width:100%;padding:14px;border:none;border-radius:14px;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#fff;cursor:pointer;margin-top:4px}
-  .modal-book:active{filter:brightness(1.15)}
+  /* ADMIN */
+  .admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:none;flex-direction:column}
+  .admin-overlay.open{display:flex}
+  .admin-login{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px}
+  .admin-login-title{font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
+  .pin-dots{display:flex;gap:14px;margin-bottom:8px}
+  .pin-dot-el{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s}
+  .pin-dot-el.filled{background:#C85A3A}
+  .pin-error{font-size:10px;letter-spacing:.2em;color:#C85A3A;text-transform:uppercase;height:16px;text-align:center}
+  .numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:260px;width:100%}
+  .num-btn{padding:18px 0;background:#242424;border:none;border-radius:14px;font-size:22px;font-weight:300;color:#fff;cursor:pointer;transition:background .15s}
+  .num-btn:active{background:#333}
+  .num-btn.del{font-size:16px;color:rgba(255,255,255,.5)}
+  .admin-content{display:none;flex-direction:column;height:100vh;overflow:hidden}
+  .admin-content.show{display:flex}
+  .admin-header{display:flex;align-items:center;justify-content:space-between;padding:48px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .admin-header-title{font-size:11px;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+  .admin-close-btn{background:none;border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);cursor:pointer}
+  .admin-tabs{display:flex;gap:3px;padding:3px}
+  .atab{flex:1;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;transition:background .2s}
+  .atab.on{background:#C85A3A;color:#fff}
+  .atab.off{background:#242424;color:rgba(255,255,255,.35)}
+  .admin-body{flex:1;overflow-y:auto;padding:16px}
+  .settings-card{background:#222;border-radius:16px;padding:18px 20px;margin-bottom:12px}
+  .settings-row{display:flex;justify-content:space-between;align-items:center}
+  .settings-label{font-size:13px;font-weight:500;color:#fff}
+  .settings-sub{font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
+  .toggle-switch{position:relative;width:48px;height:26px;cursor:pointer}
+  .toggle-switch input{opacity:0;width:0;height:0}
+  .toggle-track{position:absolute;inset:0;background:#333;border-radius:13px;transition:background .2s}
+  .toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+  .toggle-switch input:checked + .toggle-track{background:#2d7a4f}
+  .toggle-switch input:checked ~ .toggle-knob{transform:translateX(22px)}
+  .edit-card{background:#222;border-radius:16px;padding:18px 20px;margin-bottom:10px}
+  .edit-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .edit-card-name{font-size:15px;font-weight:600;color:#fff}
+  .del-btn{background:rgba(200,90,58,.15);border:1px solid rgba(200,90,58,.3);border-radius:10px;padding:6px 12px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#C85A3A;cursor:pointer}
+  .del-btn:active{background:rgba(200,90,58,.3)}
+  .edit-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+  .edit-label{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+  .edit-input{background:#2e2e2e;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;font-size:14px;color:#fff;font-family:inherit;width:100%;outline:none;transition:border-color .2s}
+  .edit-input:focus{border-color:rgba(200,90,58,.5)}
+  .edit-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .save-btn{width:100%;padding:12px;background:#C85A3A;border:none;border-radius:12px;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:#fff;cursor:pointer;margin-top:4px}
+  .save-btn:active{filter:brightness(1.15)}
+  .badge-select{background:#2e2e2e;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;font-size:13px;color:#fff;font-family:inherit;width:100%;outline:none}
+  .slot-edit{background:#2a2a2a;border-radius:10px;padding:12px;margin-bottom:8px;position:relative}
+  .slot-edit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+  .slot-del{position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,.3);font-size:16px;cursor:pointer}
+  .add-new-btn{width:100%;padding:16px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);border-radius:14px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);cursor:pointer;margin-top:6px}
+  .add-new-btn:active{background:rgba(255,255,255,.08)}
+  .saved-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#2d7a4f;color:#fff;padding:10px 24px;border-radius:20px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;z-index:600;opacity:0;transition:opacity .3s;pointer-events:none}
+  .saved-toast.show{opacity:1}
 </style>
 </head>
 <body>
 
 <script>
-  // 🔗 YOUR LINKS — replace when ready
-  const TURO_URL   = "https://turo.com";
-  const AIRBNB_URL = "https://airbnb.com";
-  const WHATSAPP   = "https://wa.me/14071234567";
+  const TURO_URL  = "https://turo.com";
+  const AIRBNB_URL= "https://airbnb.com";
+  const WHATSAPP  = "https://wa.me/14071234567";
+  const ADMIN_PIN = "1234"; // ← change to your PIN
 
-  // 🚗 SAMPLE CARS — replace with yours
-  const CARS = [
-    { name:"Tesla Model S",      year:"2024 · Electric · Autopilot", price:"$149/day", color:"#C85A3A", img:"https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=70" },
-    { name:"BMW M4 Competition", year:"2024 · 503 HP · Sport",       price:"$199/day", color:"#A04830", img:"https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=70" },
-    { name:"Range Rover Sport",  year:"2024 · Luxury SUV",           price:"$179/day", color:"#883C28", img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=700&q=70" },
-  ];
-
-  // 🏡 SAMPLE HOMES — replace with yours
-  const HOMES = [
-    { name:"Luxury Pool Villa",  area:"Dr. Phillips",  beds:5, baths:4, price:"$320/night", badge:"Available",  badgeClass:"badge-green",  color:"#696969", img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=70",
-      slots:[{d:"Apr 1 – Apr 7",n:"6 nights",p:"$1,920"},{d:"Apr 14 – Apr 21",n:"7 nights",p:"$2,240"},{d:"May 3 – May 10",n:"7 nights",p:"$2,240"}] },
-    { name:"Modern Lake Estate", area:"Windermere",    beds:4, baths:3, price:"$280/night", badge:"Available",  badgeClass:"badge-green",  color:"#575757", img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=70",
-      slots:[{d:"Apr 5 – Apr 12",n:"7 nights",p:"$1,960"},{d:"May 1 – May 8",n:"7 nights",p:"$1,960"},{d:"Jun 2 – Jun 9",n:"7 nights",p:"$2,100"}] },
-    { name:"Garden Retreat",     area:"College Park",  beds:3, baths:2, price:"$180/night", badge:"2 Left",     badgeClass:"badge-orange", color:"#484848", img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&q=70",
-      slots:[{d:"Apr 10 – Apr 14",n:"4 nights",p:"$720"},{d:"May 6 – May 10",n:"4 nights",p:"$720"}] },
-  ];
-
-  // 🏠 SAMPLE AIRBNB LISTINGS — replace with yours
-  const AIRBNBS = [
-    { name:"Downtown Loft",     area:"Downtown Orlando", price:"$120/night", rating:"4.97", reviews:"134", img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70" },
-    { name:"Pool House Oasis",  area:"Dr. Phillips",     price:"$210/night", rating:"5.0",  reviews:"89",  img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70" },
-    { name:"Cozy Lake View",    area:"Windermere",       price:"$155/night", rating:"4.95", reviews:"212", img:"https://images.unsplash.com/photo-1501183638710-841dd1904471?w=700&q=70" },
-  ];
+  function defaultData(){
+    return {
+      showPrices: false,
+      cars:[
+        {name:"Tesla Model S",      year:"2024 · Electric · Autopilot",price:"149",color:"#C85A3A",img:"https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=70"},
+        {name:"BMW M4 Competition",  year:"2024 · 503 HP · Sport",      price:"199",color:"#A04830",img:"https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=70"},
+        {name:"Range Rover Sport",   year:"2024 · Luxury SUV",          price:"179",color:"#883C28",img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=700&q=70"},
+      ],
+      homes:[
+        {name:"Luxury Pool Villa",  area:"Dr. Phillips", beds:"5",baths:"4",price:"320",badge:"Available",badgeClass:"badge-green", color:"#696969",px:28,py:52,img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=70",  slots:[{d:"Apr 1 – Apr 7",n:"6 nights",p:"$1,920"},{d:"Apr 14 – Apr 21",n:"7 nights",p:"$2,240"}]},
+        {name:"Modern Lake Estate", area:"Windermere",   beds:"4",baths:"3",price:"280",badge:"Available",badgeClass:"badge-green", color:"#575757",px:18,py:30,img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=70",  slots:[{d:"Apr 5 – Apr 12",n:"7 nights",p:"$1,960"},{d:"May 1 – May 8",n:"7 nights",p:"$1,960"}]},
+        {name:"Garden Retreat",     area:"College Park", beds:"3",baths:"2",price:"180",badge:"2 Left",   badgeClass:"badge-orange",color:"#484848",px:55,py:25,img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&q=70",slots:[{d:"Apr 10 – Apr 14",n:"4 nights",p:"$720"}]},
+        {name:"Downtown Loft",      area:"Downtown",     beds:"2",baths:"2",price:"220",badge:"Available",badgeClass:"badge-green", color:"#505050",px:60,py:44,img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70",  slots:[{d:"Apr 3 – Apr 8",n:"5 nights",p:"$1,100"}]},
+        {name:"Lakefront Escape",   area:"Lake Nona",    beds:"4",baths:"3",price:"260",badge:"Available",badgeClass:"badge-green", color:"#606060",px:75,py:72,img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70", slots:[{d:"Apr 7 – Apr 14",n:"7 nights",p:"$1,820"}]},
+      ],
+      airbnbs:[
+        {name:"Downtown Loft",    area:"Downtown Orlando",price:"120",rating:"4.97",reviews:"134",img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70"},
+        {name:"Pool House Oasis", area:"Dr. Phillips",    price:"210",rating:"5.0", reviews:"89", img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70"},
+        {name:"Cozy Lake View",   area:"Windermere",      price:"155",rating:"4.95",reviews:"212",img:"https://images.unsplash.com/photo-1501183638710-841dd1904471?w=700&q=70"},
+      ]
+    };
+  }
+  let DATA = JSON.parse(localStorage.getItem('os_data')||'null') || defaultData();
+  function saveData(){ localStorage.setItem('os_data',JSON.stringify(DATA)); }
 </script>
 
-<!-- ══ LANDING ══ -->
+<!-- LANDING -->
 <div id="landing" class="page active">
-  <div class="top-bar">
-    <span>Orlando</span>
-    <span>Superhost</span>
-  </div>
+  <div class="top-bar"><span>Orlando</span><span>Superhost</span></div>
   <div class="tiles-wrap">
     <div class="tile tile-cars" onclick="show('cars')">
-      <div class="tile-top">
-        <div class="tile-name">Cars</div>
-        <div class="circle-btn">→</div>
-      </div>
-      <div class="tile-bottom">
-        <div class="tile-number" id="cnt-cars">3</div>
-        <div class="tile-avail">Available</div>
-      </div>
+      <div class="tile-top"><div class="tile-name">Cars</div><div class="circle-btn">→</div></div>
+      <div class="tile-bottom"><div class="tile-number" id="cnt-cars">—</div><div class="tile-avail">Available</div></div>
+      <div class="admin-gear" onclick="event.stopPropagation();openAdmin()">⚙</div>
     </div>
     <div class="tile tile-homes" onclick="show('homes')">
-      <div class="tile-top">
-        <div class="tile-name">Homes</div>
-        <div class="circle-btn">→</div>
-      </div>
-      <div class="tile-bottom">
-        <div class="tile-number" id="cnt-homes">3</div>
-        <div class="tile-avail">Available</div>
-      </div>
+      <div class="tile-top"><div class="tile-name">Homes</div><div class="circle-btn">→</div></div>
+      <div class="tile-bottom"><div class="tile-number" id="cnt-homes">—</div><div class="tile-avail">Available</div></div>
     </div>
     <div class="tile tile-airbnb" onclick="show('airbnb')">
-      <div class="tile-top">
-        <div class="tile-name">Airbnb</div>
-        <div class="circle-btn">→</div>
-      </div>
-      <div class="tile-bottom">
-        <div class="tile-number">5★</div>
-        <div class="tile-avail">Superhost</div>
-      </div>
+      <div class="tile-top"><div class="tile-name">Airbnb</div><div class="circle-btn">→</div></div>
+      <div class="tile-bottom"><div class="tile-number">5★</div><div class="tile-avail">Superhost</div></div>
     </div>
   </div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
-    <div class="wa-l">Questions?</div>
-    <div class="wa-r">WhatsApp Us →</div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
+</div>
+
+<!-- HOMES -->
+<div id="homes" class="page" style="overflow:hidden">
+  <div class="inner-header">
+    <button class="back-btn" onclick="show('landing')">←</button>
+    <div class="h-title">Orlando Superhost</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="view-toggle">
+    <button class="toggle-btn active"   id="btn-map"  onclick="switchView('map')">📍 Map</button>
+    <button class="toggle-btn inactive" id="btn-list" onclick="switchView('list')">☰ List</button>
+  </div>
+  <div id="map-view" style="flex:1;display:flex;flex-direction:column">
+    <div class="map-wrap">
+      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.65%2C28.35%2C-81.20%2C28.65&layer=transportmap" style="position:absolute;inset:0;width:100%;height:100%;border:none;filter:brightness(.35) saturate(.4) contrast(1.2);pointer-events:none"></iframe>
+      <div class="map-grid"></div>
+      <div id="pins"></div>
+      <div class="map-label" style="left:22%;top:24%">Windermere</div>
+      <div class="map-label" style="left:24%;top:47%">Dr. Phillips</div>
+      <div class="map-label" style="left:52%;top:20%">College Park</div>
+      <div class="map-label" style="left:56%;top:40%">Downtown</div>
+      <div class="map-label" style="left:70%;top:68%">Lake Nona</div>
+    </div>
+  </div>
+  <div id="list-view" style="display:none;flex:1;overflow-y:auto;padding-bottom:60px">
+    <div class="homes-list" id="homes-list"></div>
   </div>
 </div>
 
-<!-- ══ CARS ══ -->
+<!-- PROPERTY SHEET -->
+<div id="sheet-overlay" onclick="closeSheet()"></div>
+<div class="prop-sheet" id="prop-sheet">
+  <div class="prop-handle"></div>
+  <button class="prop-close" onclick="closeSheet()">×</button>
+  <div id="prop-img-wrap"></div>
+  <div id="prop-badge-wrap"></div>
+  <div class="prop-name" id="prop-name"></div>
+  <div class="prop-area" id="prop-area"></div>
+  <div class="prop-stats" id="prop-stats"></div>
+  <div class="slots-title">Available Dates</div>
+  <div class="slots" id="prop-slots"></div>
+  <button class="prop-book" onclick="window.open(WHATSAPP,'_blank')">Book via WhatsApp →</button>
+</div>
+
+<!-- CARS -->
 <div id="cars" class="page">
   <div class="inner-header">
     <button class="back-btn" onclick="show('landing')">←</button>
     <div class="h-title">Orlando Superhost</div>
     <div style="width:40px"></div>
   </div>
-  <div class="section-eye" style="color:#C85A3A">Our Fleet · Orlando FL</div>
-  <div class="section-ttl">Cars</div>
-  <div class="cards" id="cars-list"></div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
-    <div class="wa-l">Questions?</div>
-    <div class="wa-r">WhatsApp Us →</div>
+  <div style="padding:4px 24px 16px">
+    <div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#C85A3A;margin-bottom:6px">Our Fleet · Orlando FL</div>
+    <div style="font-size:30px;font-weight:700;letter-spacing:-.01em">Cars</div>
   </div>
+  <div class="cars-cards" id="cars-list"></div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
 </div>
 
-<!-- ══ HOMES ══ -->
-<div id="homes" class="page">
-  <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">←</button>
-    <div class="h-title">Orlando Superhost</div>
-    <div style="width:40px"></div>
-  </div>
-  <div class="section-eye" style="color:#aaa">Rentals · Orlando FL</div>
-  <div class="section-ttl">Homes</div>
-  <div class="cards" id="homes-list"></div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
-    <div class="wa-l">Questions?</div>
-    <div class="wa-r">WhatsApp Us →</div>
-  </div>
-</div>
-
-<!-- ══ AIRBNB ══ -->
+<!-- AIRBNB -->
 <div id="airbnb" class="page">
   <div class="inner-header">
     <button class="back-btn" onclick="show('landing')">←</button>
     <div class="h-title">Orlando Superhost</div>
     <div style="width:40px"></div>
   </div>
-  <div class="section-eye" style="color:#FF5A5F">Short Stays · Orlando FL</div>
-  <div class="section-ttl">Airbnb</div>
-  <div class="airbnb-cards" id="airbnb-list"></div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')">
-    <div class="wa-l">Questions?</div>
-    <div class="wa-r">WhatsApp Us →</div>
+  <div style="padding:4px 24px 16px">
+    <div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#FF5A5F;margin-bottom:6px">Short Stays · Orlando FL</div>
+    <div style="font-size:30px;font-weight:700;letter-spacing:-.01em">Airbnb</div>
+  </div>
+  <div class="ab-cards" id="airbnb-list"></div>
+  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-login" id="admin-login">
+    <div style="font-size:40px;opacity:.5;margin-bottom:8px">🔐</div>
+    <div class="admin-login-title">Admin Access</div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot-el" id="d0"></div><div class="pin-dot-el" id="d1"></div>
+      <div class="pin-dot-el" id="d2"></div><div class="pin-dot-el" id="d3"></div>
+    </div>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="numpad">
+      <button class="num-btn" onclick="pp('1')">1</button>
+      <button class="num-btn" onclick="pp('2')">2</button>
+      <button class="num-btn" onclick="pp('3')">3</button>
+      <button class="num-btn" onclick="pp('4')">4</button>
+      <button class="num-btn" onclick="pp('5')">5</button>
+      <button class="num-btn" onclick="pp('6')">6</button>
+      <button class="num-btn" onclick="pp('7')">7</button>
+      <button class="num-btn" onclick="pp('8')">8</button>
+      <button class="num-btn" onclick="pp('9')">9</button>
+      <button class="num-btn" style="font-size:11px;color:rgba(255,255,255,.35)" onclick="pp('x')">Cancel</button>
+      <button class="num-btn" onclick="pp('0')">0</button>
+      <button class="num-btn del" onclick="pp('d')">⌫</button>
+    </div>
+  </div>
+  <div class="admin-content" id="admin-content">
+    <div class="admin-header">
+      <div class="admin-header-title">Admin Panel</div>
+      <button class="admin-close-btn" onclick="closeAdmin()">Close ×</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="atab on"  id="at-s" onclick="aTab('s')">Settings</button>
+      <button class="atab off" id="at-h" onclick="aTab('h')">Homes</button>
+      <button class="atab off" id="at-c" onclick="aTab('c')">Cars</button>
+      <button class="atab off" id="at-a" onclick="aTab('a')">Airbnb</button>
+    </div>
+    <div class="admin-body" id="admin-body"></div>
   </div>
 </div>
 
-<!-- ══ MODAL ══ -->
-<div class="modal-bg" id="modal" onclick="closeMod(event)">
-  <div class="modal">
-    <div class="modal-bar" id="modal-bar"></div>
-    <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeMod()">×</button>
-    <div class="modal-eye" id="modal-eye">Availability</div>
-    <div class="modal-name" id="modal-name"></div>
-    <div class="slots" id="modal-slots"></div>
-    <button class="modal-book" id="modal-book" onclick="window.open(WHATSAPP,'_blank')">Book via WhatsApp →</button>
-  </div>
-</div>
+<div class="saved-toast" id="saved-toast">Saved ✓</div>
 
 <script>
+  /* PIN */
+  let pin='';
+  function pp(v){
+    if(v==='x'){closeAdmin();return}
+    if(v==='d'){pin=pin.slice(0,-1);dots();return}
+    if(pin.length>=4)return;
+    pin+=v; dots();
+    if(pin.length===4) checkPin();
+  }
+  function dots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled',i<pin.length); }
+  function checkPin(){
+    if(pin===ADMIN_PIN){
+      document.getElementById('pin-error').textContent='';
+      document.getElementById('admin-login').style.display='none';
+      document.getElementById('admin-content').classList.add('show');
+      aTab('s');
+    } else {
+      document.getElementById('pin-error').textContent='Wrong PIN';
+      pin=''; dots();
+    }
+  }
+
+  function openAdmin(){
+    pin=''; dots();
+    document.getElementById('pin-error').textContent='';
+    document.getElementById('admin-login').style.display='flex';
+    document.getElementById('admin-content').classList.remove('show');
+    document.getElementById('admin-overlay').classList.add('open');
+  }
+  function closeAdmin(){ document.getElementById('admin-overlay').classList.remove('open'); }
+
+  function toast(){
+    const t=document.getElementById('saved-toast');
+    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000);
+  }
+
+  /* TABS */
+  function aTab(t){
+    ['s','h','c','a'].forEach(x=>{ document.getElementById('at-'+x).className='atab '+(x===t?'on':'off'); });
+    const b=document.getElementById('admin-body');
+    if(t==='s') renderSettings(b);
+    if(t==='h') renderAHomes(b);
+    if(t==='c') renderACars(b);
+    if(t==='a') renderAAirbnb(b);
+  }
+
+  /* SETTINGS */
+  function renderSettings(b){
+    b.innerHTML=`
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-label">Show Prices</div><div class="settings-sub">OFF = people must call you</div></div>
+          <label class="toggle-switch">
+            <input type="checkbox" onchange="DATA.showPrices=this.checked;saveData();toast();renderApp()" ${DATA.showPrices?'checked':''}>
+            <div class="toggle-track"></div><div class="toggle-knob"></div>
+          </label>
+        </div>
+      </div>
+      <div class="settings-card" style="margin-top:8px">
+        <div style="font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.35);text-transform:uppercase;line-height:2.2">
+          Cars: ${DATA.cars.length} &nbsp;·&nbsp; Homes: ${DATA.homes.length} &nbsp;·&nbsp; Airbnb: ${DATA.airbnbs.length}<br>
+          Prices: ${DATA.showPrices?'✓ Visible':'✗ Hidden — call to ask'}
+        </div>
+      </div>`;
+  }
+
+  /* ADMIN HOMES */
+  function renderAHomes(b){
+    b.innerHTML = DATA.homes.map((h,i)=>`
+      <div class="edit-card">
+        <div class="edit-card-header">
+          <div class="edit-card-name">🏡 ${h.name}</div>
+          <button class="del-btn" onclick="delItem('homes',${i})">Delete</button>
+        </div>
+        <div class="edit-row"><div class="edit-label">Name</div><input class="edit-input" value="${h.name}" oninput="DATA.homes[${i}].name=this.value"></div>
+        <div class="edit-row"><div class="edit-label">Area</div><input class="edit-input" value="${h.area}" oninput="DATA.homes[${i}].area=this.value"></div>
+        <div class="edit-row-2">
+          <div class="edit-row"><div class="edit-label">Beds</div><input class="edit-input" type="number" value="${h.beds}" oninput="DATA.homes[${i}].beds=this.value"></div>
+          <div class="edit-row"><div class="edit-label">Baths</div><input class="edit-input" type="number" value="${h.baths}" oninput="DATA.homes[${i}].baths=this.value"></div>
+        </div>
+        <div class="edit-row"><div class="edit-label">Price / Night ($)</div><input class="edit-input" type="number" value="${h.price}" oninput="DATA.homes[${i}].price=this.value"></div>
+        <div class="edit-row">
+          <div class="edit-label">Status</div>
+          <select class="badge-select" onchange="DATA.homes[${i}].badge=this.value;DATA.homes[${i}].badgeClass=this.value==='Available'?'badge-green':'badge-orange'">
+            <option ${h.badge==='Available'?'selected':''}>Available</option>
+            <option ${h.badge==='2 Left'?'selected':''}>2 Left</option>
+            <option ${h.badge==='Booked'?'selected':''}>Booked</option>
+            <option ${h.badge==='Coming Soon'?'selected':''}>Coming Soon</option>
+          </select>
+        </div>
+        <div class="edit-row"><div class="edit-label">Photo URL</div><input class="edit-input" value="${h.img||''}" placeholder="https://..." oninput="DATA.homes[${i}].img=this.value"></div>
+        <div style="margin-top:12px;margin-bottom:8px">
+          <div class="edit-label" style="margin-bottom:8px">Date Slots</div>
+          <div id="sl-${i}">${renderSlots(i)}</div>
+          <button class="add-new-btn" style="padding:10px;margin-top:4px" onclick="addSlot(${i})">+ Add Date</button>
+        </div>
+        <button class="save-btn" onclick="saveData();toast();renderApp()">Save ✓</button>
+      </div>`).join('')
+    +`<button class="add-new-btn" onclick="addHome()">+ Add New Home</button>`;
+  }
+
+  function renderSlots(i){
+    return DATA.homes[i].slots.map((s,j)=>`
+      <div class="slot-edit">
+        <button class="slot-del" onclick="delSlot(${i},${j})">×</button>
+        <div class="slot-edit-row">
+          <div class="edit-row"><div class="edit-label">Dates</div><input class="edit-input" value="${s.d}" oninput="DATA.homes[${i}].slots[${j}].d=this.value"></div>
+          <div class="edit-row"><div class="edit-label">Nights</div><input class="edit-input" value="${s.n}" oninput="DATA.homes[${i}].slots[${j}].n=this.value"></div>
+        </div>
+        <div class="edit-row"><div class="edit-label">Total Price</div><input class="edit-input" value="${s.p}" oninput="DATA.homes[${i}].slots[${j}].p=this.value"></div>
+      </div>`).join('');
+  }
+
+  function addSlot(i){ DATA.homes[i].slots.push({d:'',n:'',p:''}); document.getElementById('sl-'+i).innerHTML=renderSlots(i); }
+  function delSlot(i,j){ DATA.homes[i].slots.splice(j,1); document.getElementById('sl-'+i).innerHTML=renderSlots(i); }
+  function addHome(){
+    DATA.homes.push({name:'New Property',area:'Orlando',beds:'3',baths:'2',price:'200',badge:'Available',badgeClass:'badge-green',color:'#555',px:50,py:50,img:'',slots:[]});
+    saveData(); renderAHomes(document.getElementById('admin-body')); toast(); renderApp();
+  }
+
+  /* ADMIN CARS */
+  function renderACars(b){
+    b.innerHTML = DATA.cars.map((c,i)=>`
+      <div class="edit-card">
+        <div class="edit-card-header">
+          <div class="edit-card-name">🚗 ${c.name}</div>
+          <button class="del-btn" onclick="delItem('cars',${i})">Delete</button>
+        </div>
+        <div class="edit-row"><div class="edit-label">Car Name</div><input class="edit-input" value="${c.name}" oninput="DATA.cars[${i}].name=this.value"></div>
+        <div class="edit-row"><div class="edit-label">Year / Details</div><input class="edit-input" value="${c.year}" oninput="DATA.cars[${i}].year=this.value"></div>
+        <div class="edit-row"><div class="edit-label">Price / Day ($)</div><input class="edit-input" type="number" value="${c.price}" oninput="DATA.cars[${i}].price=this.value"></div>
+        <div class="edit-row"><div class="edit-label">Photo URL</div><input class="edit-input" value="${c.img||''}" placeholder="https://..." oninput="DATA.cars[${i}].img=this.value"></div>
+        <button class="save-btn" onclick="saveData();toast();renderApp()">Save ✓</button>
+      </div>`).join('')
+    +`<button class="add-new-btn" onclick="addCar()">+ Add New Car</button>`;
+  }
+  function addCar(){
+    DATA.cars.push({name:'New Car',year:'2024',price:'150',color:'#C85A3A',img:''});
+    saveData(); renderACars(document.getElementById('admin-body')); toast(); renderApp();
+  }
+
+  /* ADMIN AIRBNB */
+  function renderAAirbnb(b){
+    b.innerHTML = DATA.airbnbs.map((a,i)=>`
+      <div class="edit-card">
+        <div class="edit-card-header">
+          <div class="edit-card-name">🏠 ${a.name}</div>
+          <button class="del-btn" onclick="delItem('airbnbs',${i})">Delete</button>
+        </div>
+        <div class="edit-row"><div class="edit-label">Listing Name</div><input class="edit-input" value="${a.name}" oninput="DATA.airbnbs[${i}].name=this.value"></div>
+        <div class="edit-row"><div class="edit-label">Area</div><input class="edit-input" value="${a.area}" oninput="DATA.airbnbs[${i}].area=this.value"></div>
+        <div class="edit-row"><div class="edit-label">Price / Night ($)</div><input class="edit-input" type="number" value="${a.price}" oninput="DATA.airbnbs[${i}].price=this.value"></div>
+        <div class="edit-row-2">
+          <div class="edit-row"><div class="edit-label">Rating</div><input class="edit-input" value="${a.rating}" oninput="DATA.airbnbs[${i}].rating=this.value"></div>
+          <div class="edit-row"><div class="edit-label">Reviews</div><input class="edit-input" value="${a.reviews}" oninput="DATA.airbnbs[${i}].reviews=this.value"></div>
+        </div>
+        <div class="edit-row"><div class="edit-label">Photo URL</div><input class="edit-input" value="${a.img||''}" placeholder="https://..." oninput="DATA.airbnbs[${i}].img=this.value"></div>
+        <button class="save-btn" onclick="saveData();toast();renderApp()">Save ✓</button>
+      </div>`).join('')
+    +`<button class="add-new-btn" onclick="addAirbnb()">+ Add New Listing</button>`;
+  }
+  function addAirbnb(){
+    DATA.airbnbs.push({name:'New Listing',area:'Orlando',price:'150',rating:'5.0',reviews:'0',img:''});
+    saveData(); renderAAirbnb(document.getElementById('admin-body')); toast(); renderApp();
+  }
+
+  /* DELETE */
+  function delItem(type,i){
+    if(!confirm('Delete this item?')) return;
+    DATA[type].splice(i,1);
+    saveData(); toast(); renderApp();
+    const b=document.getElementById('admin-body');
+    if(type==='homes')   renderAHomes(b);
+    if(type==='cars')    renderACars(b);
+    if(type==='airbnbs') renderAAirbnb(b);
+  }
+
+  /* RENDER PUBLIC APP */
+  function renderApp(){
+    const sp=DATA.showPrices;
+    document.getElementById('cnt-cars').textContent  = DATA.cars.length;
+    document.getElementById('cnt-homes').textContent = DATA.homes.length;
+
+    /* PINS */
+    const pe=document.getElementById('pins'); pe.innerHTML='';
+    DATA.homes.forEach((h,i)=>{
+      const cls=h.badge==='Available'?'avail':'limited';
+      const el=document.createElement('div');
+      el.className=`pin ${cls}`;
+      el.style.left=h.px+'%'; el.style.top=h.py+'%';
+      el.innerHTML=`<div class="pin-bubble"><div class="pin-dot"></div>${sp?'$'+h.price+'/nt':h.name.split(' ')[0]}</div><div class="pin-tail"></div>`;
+      el.onclick=()=>openSheet(i); pe.appendChild(el);
+    });
+
+    /* HOMES LIST */
+    const hl=document.getElementById('homes-list'); hl.innerHTML='';
+    DATA.homes.forEach((h,i)=>{
+      hl.innerHTML+=`
+        <div class="home-card">
+          <div class="hc-img" style="background:${h.color}">
+            ${h.img?`<img src="${h.img}" alt="${h.name}"/>`:''}
+            <div class="hc-badge ${h.badgeClass}">${h.badge}</div>
+          </div>
+          <div class="hc-body" style="background:${h.color}">
+            <div class="hc-top"><div><div class="hc-name">${h.name}</div><div class="hc-loc">${h.area}</div></div><div class="circle-btn">→</div></div>
+            <div class="hc-stats">
+              <div><div class="hc-sn">${h.beds}</div><div class="hc-sl">Beds</div></div>
+              <div><div class="hc-sn">${h.baths}</div><div class="hc-sl">Baths</div></div>
+              ${sp?`<div><div class="hc-sn">$${h.price}</div><div class="hc-sl">/night</div></div>`:''}
+            </div>
+            <button class="hc-btn" onclick="openSheet(${i})">Check Availability →</button>
+          </div>
+        </div>`;
+    });
+
+    /* CARS */
+    const cl=document.getElementById('cars-list'); cl.innerHTML='';
+    DATA.cars.forEach(c=>{
+      cl.innerHTML+=`
+        <div class="car-card" style="background:${c.color}">
+          ${c.img?`<img src="${c.img}" alt="${c.name}"/>`:''}
+          <div class="car-z">
+            <div class="car-top"><div><div class="car-name">${c.name}</div><div class="car-yr">${c.year}</div></div><div class="circle-btn">→</div></div>
+            <div class="car-bot">
+              ${sp?`<div><div style="font-size:20px;font-weight:700;color:#fff">$${c.price}/day</div><div style="font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:2px">Per day</div></div>`
+                  :`<div style="font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.15em">Call for pricing</div>`}
+              <a href="${TURO_URL}" target="_blank" class="turo-btn">Book on Turo →</a>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    /* AIRBNB */
+    const al=document.getElementById('airbnb-list'); al.innerHTML='';
+    DATA.airbnbs.forEach(a=>{
+      al.innerHTML+=`
+        <div class="ab-card">
+          <div class="ab-img-wrap">
+            ${a.img?`<img src="${a.img}" alt="${a.name}"/>`:''}
+            <div class="ab-sup">Superhost</div>
+          </div>
+          <div class="ab-body">
+            <div class="ab-top"><div><div class="ab-name">${a.name}</div><div class="ab-loc">${a.area}</div></div><div class="circle-btn" style="border-color:rgba(255,90,95,.4)">→</div></div>
+            <div class="ab-row">
+              ${sp?`<div><div style="font-size:20px;font-weight:700;color:#fff">$${a.price}/night</div><div style="font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px">Per night</div></div>`
+                  :`<div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.15em">Call for pricing</div>`}
+              <div style="text-align:right"><div class="ab-stars">★ ${a.rating}</div><div class="ab-rev">${a.reviews} reviews</div></div>
+            </div>
+            <a href="${AIRBNB_URL}" target="_blank" class="ab-link">Book on Airbnb →</a>
+          </div>
+        </div>`;
+    });
+  }
+
+  /* PROPERTY SHEET */
+  function openSheet(i){
+    const h=DATA.homes[i]; const sp=DATA.showPrices;
+    document.getElementById('prop-img-wrap').innerHTML=h.img?`<img src="${h.img}" class="prop-img" alt="${h.name}"/>`:'';
+    document.getElementById('prop-badge-wrap').innerHTML=`<span class="prop-badge ${h.badgeClass}">${h.badge}</span>`;
+    document.getElementById('prop-name').textContent=h.name;
+    document.getElementById('prop-area').textContent=h.area+' · Orlando, FL';
+    document.getElementById('prop-stats').innerHTML=
+      `<div><div class="ps-n">${h.beds}</div><div class="ps-l">Beds</div></div>
+       <div><div class="ps-n">${h.baths}</div><div class="ps-l">Baths</div></div>
+       ${sp?`<div><div class="ps-n">$${h.price}</div><div class="ps-l">/ night</div></div>`:''}`;
+    document.getElementById('prop-slots').innerHTML=h.slots.map(s=>`
+      <div class="slot">
+        <div><div class="slot-d">${s.d}</div><div class="slot-n">${s.n}</div></div>
+        ${sp?`<div class="slot-p">${s.p}</div>`:`<div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.1em">WhatsApp for price</div>`}
+      </div>`).join('');
+    document.getElementById('prop-sheet').classList.add('open');
+    document.getElementById('sheet-overlay').style.display='block';
+  }
+  function closeSheet(){
+    document.getElementById('prop-sheet').classList.remove('open');
+    document.getElementById('sheet-overlay').style.display='none';
+  }
+
   function show(id){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    window.scrollTo(0,0);
+    document.getElementById(id).classList.add('active'); window.scrollTo(0,0);
+  }
+  function switchView(v){
+    document.getElementById('map-view').style.display =v==='map' ?'flex':'none';
+    document.getElementById('list-view').style.display=v==='list'?'block':'none';
+    document.getElementById('btn-map').className ='toggle-btn '+(v==='map' ?'active':'inactive');
+    document.getElementById('btn-list').className='toggle-btn '+(v==='list'?'active':'inactive');
   }
 
-  function openMod(name, slots, color){
-    document.getElementById('modal-name').textContent = name;
-    document.getElementById('modal-bar').style.background = color;
-    document.getElementById('modal-eye').style.color = color;
-    document.getElementById('modal-book').style.background = color;
-    const sl = document.getElementById('modal-slots');
-    sl.innerHTML = slots.map(s=>`
-      <div class="slot" style="border-left-color:${color}">
-        <div>
-          <div class="slot-dates">${s.d}</div>
-          <div class="slot-nights">${s.n}</div>
-        </div>
-        <div class="slot-price" style="color:${color}">${s.p}</div>
-      </div>`).join('');
-    document.getElementById('modal').classList.add('open');
-  }
-
-  function closeMod(e){
-    if(!e||e.target===document.getElementById('modal'))
-      document.getElementById('modal').classList.remove('open');
-  }
-
-  // counts
-  document.getElementById('cnt-cars').textContent  = CARS.length;
-  document.getElementById('cnt-homes').textContent = HOMES.length;
-
-  // render CARS
-  const cl = document.getElementById('cars-list');
-  CARS.forEach(c=>{
-    cl.innerHTML+=`
-      <div class="car-card" style="background:${c.color}">
-        <img src="${c.img}" alt="${c.name}"/>
-        <div class="car-z">
-          <div class="car-top">
-            <div>
-              <div class="car-name">${c.name}</div>
-              <div class="car-year">${c.year}</div>
-            </div>
-            <div class="circle-btn">→</div>
-          </div>
-          <div class="car-bot">
-            <div>
-              <div class="car-price">${c.price}</div>
-              <div class="car-price-lbl">Per day</div>
-            </div>
-            <a href="${TURO_URL}" target="_blank" class="turo-btn">Book on Turo →</a>
-          </div>
-        </div>
-      </div>`;
-  });
-
-  // render HOMES
-  const hl = document.getElementById('homes-list');
-  HOMES.forEach(h=>{
-    hl.innerHTML+=`
-      <div class="home-card">
-        <div class="home-img" style="background:${h.color}">
-          <img src="${h.img}" alt="${h.name}"/>
-          <div class="home-badge ${h.badgeClass}">${h.badge}</div>
-        </div>
-        <div class="home-body" style="background:${h.color}">
-          <div class="home-top">
-            <div>
-              <div class="home-name">${h.name}</div>
-              <div class="home-loc">${h.area} · Orlando FL</div>
-            </div>
-            <div class="circle-btn">→</div>
-          </div>
-          <div class="home-stats">
-            <div><div class="stat-n">${h.beds}</div><div class="stat-l">Beds</div></div>
-            <div><div class="stat-n">${h.baths}</div><div class="stat-l">Baths</div></div>
-            <div><div class="stat-n">${h.price}</div><div class="stat-l">Per night</div></div>
-          </div>
-          <button class="avail-btn" onclick="openMod('${h.name}',HOMES[${HOMES.indexOf(h)}].slots,'${h.color}')">Check Availability →</button>
-        </div>
-      </div>`;
-  });
-
-  // render AIRBNB
-  const al = document.getElementById('airbnb-list');
-  AIRBNBS.forEach(a=>{
-    al.innerHTML+=`
-      <div class="airbnb-card">
-        <div class="ab-img">
-          <img src="${a.img}" alt="${a.name}"/>
-          <div class="ab-badge">Superhost</div>
-        </div>
-        <div class="ab-body">
-          <div class="ab-top">
-            <div>
-              <div class="ab-name">${a.name}</div>
-              <div class="ab-loc">${a.area}</div>
-            </div>
-            <div class="circle-btn" style="border-color:rgba(255,90,95,.4)">→</div>
-          </div>
-          <div class="ab-row">
-            <div>
-              <div class="ab-price">${a.price}</div>
-              <div class="ab-price-lbl">Per night</div>
-            </div>
-            <div style="text-align:right">
-              <div class="ab-stars">★ ${a.rating}</div>
-              <div style="font-size:8px;letter-spacing:.15em;color:rgba(255,255,255,.35);margin-top:2px">${a.reviews} reviews</div>
-            </div>
-          </div>
-          <a href="${AIRBNB_URL}" target="_blank" class="ab-link">Book on Airbnb →</a>
-        </div>
-      </div>`;
-  });
+  renderApp();
 </script>
 </body>
 </html>
