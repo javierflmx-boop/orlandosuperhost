@@ -6,620 +6,488 @@
 <title>Orlando Superhost</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{background:#1a1a1a;font-family:system-ui,-apple-system,sans-serif;color:#fff;overflow-x:hidden}
+  body{background:#111;font-family:system-ui,-apple-system,sans-serif;color:#fff;overflow-x:hidden}
   .page{display:none;min-height:100vh;flex-direction:column}
   .page.active{display:flex}
+
+  /* TOP BAR */
   .top-bar{display:flex;justify-content:space-between;align-items:center;padding:52px 24px 16px}
-  .top-bar span{font-size:11px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.4);text-transform:uppercase}
-  .tiles-wrap{display:flex;flex-direction:column;gap:3px;flex:1;padding:0 3px 60px}
-  .tile{position:relative;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:22px 24px 20px;transition:filter .18s;min-height:128px}
+  .top-bar span{font-size:11px;font-weight:300;letter-spacing:.5em;color:rgba(255,255,255,.35);text-transform:uppercase}
+
+  /* TILES — full width, stacked exactly like screenshot */
+  .tiles-wrap{display:flex;flex-direction:column;padding-bottom:56px}
+
+  .tile{
+    position:relative;overflow:hidden;cursor:pointer;width:100%;
+    display:flex;flex-direction:column;justify-content:space-between;
+    padding:22px 24px 20px;transition:filter .15s;
+    min-height:115px;
+  }
   .tile:active{filter:brightness(1.18)}
-  .tile-cars{background:#C85A3A;flex:1.1}
-  .tile-homes{background:#787878;flex:1}
-  .tile-airbnb{background:#383838;flex:1}
-  .tile::after{content:'';position:absolute;bottom:0;right:0;width:55%;height:100%;background:rgba(255,255,255,.06);clip-path:polygon(30% 100%,60% 40%,80% 65%,100% 20%,100% 100%)}
-  .tile-top{display:flex;justify-content:space-between;align-items:flex-start}
-  .tile-name{font-size:15px;font-weight:400;color:rgba(255,255,255,.9)}
-  .circle-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(255,255,255,.7);position:relative;z-index:2;flex-shrink:0}
-  .tile-bottom{display:flex;justify-content:space-between;align-items:flex-end}
-  .tile-number{font-size:52px;font-weight:700;color:rgba(255,255,255,.95);line-height:1;letter-spacing:-.02em}
-  .tile-avail{font-size:9px;font-weight:300;letter-spacing:.25em;color:rgba(255,255,255,.5);text-transform:uppercase;align-self:flex-end;padding-bottom:6px}
-  .admin-gear{position:absolute;bottom:14px;right:16px;font-size:18px;opacity:.2;cursor:pointer;z-index:5}
-  .inner-header{display:flex;align-items:center;justify-content:space-between;padding:48px 20px 14px;background:#1a1a1a;position:sticky;top:0;z-index:100}
-  .back-btn{background:none;border:none;color:rgba(255,255,255,.5);font-size:24px;cursor:pointer;padding:4px;line-height:1}
-  .h-title{font-size:11px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.4);text-transform:uppercase}
-  .view-toggle{display:flex;gap:3px;padding:0 3px 3px}
-  .toggle-btn{flex:1;padding:11px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
-  .toggle-btn.active{background:#787878;color:#fff}
-  .toggle-btn.inactive{background:#2a2a2a;color:rgba(255,255,255,.35)}
-  .map-wrap{flex:1;position:relative;overflow:hidden;background:#222;min-height:420px}
-  .map-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px}
-  .pin{position:absolute;cursor:pointer;transform:translate(-50%,-50%);z-index:10;transition:transform .15s}
-  .pin:active{transform:translate(-50%,-50%) scale(1.15)}
-  .pin-bubble{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.2)}
-  .pin-dot{width:8px;height:8px;border-radius:50%;background:#fff;opacity:.8;flex-shrink:0}
-  .pin.avail .pin-bubble{background:#2d7a4f;color:#fff}
-  .pin.limited .pin-bubble{background:#C85A3A;color:#fff}
-  .pin-tail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;margin:0 auto}
-  .pin.avail .pin-tail{border-top:8px solid #2d7a4f}
-  .pin.limited .pin-tail{border-top:8px solid #C85A3A}
-  .map-label{position:absolute;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.2);pointer-events:none}
-  .prop-sheet{position:fixed;bottom:0;left:0;right:0;background:#242424;border-radius:24px 24px 0 0;border-top:3px solid #787878;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94);z-index:300;max-width:500px;margin:0 auto;padding:22px 22px 48px;max-height:88vh;overflow-y:auto}
-  .prop-sheet.open{transform:translateY(0)}
-  .prop-handle{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:0 auto 18px}
-  .prop-close{position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,.35);font-size:26px;cursor:pointer;line-height:1}
-  .prop-img{width:100%;height:160px;object-fit:cover;border-radius:14px;margin-bottom:14px}
-  .prop-badge{display:inline-block;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:10px}
-  .badge-green{background:#2d7a4f;color:#fff}
-  .badge-orange{background:#C85A3A;color:#fff}
-  .prop-name{font-size:20px;font-weight:700;color:#fff;margin-bottom:3px}
-  .prop-area{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:14px}
-  .prop-stats{display:flex;gap:20px;padding:13px 0;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:14px}
-  .ps-n{font-size:22px;font-weight:700;color:#fff;line-height:1}
-  .ps-l{font-size:7px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
-  .slots-title{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:10px}
-  .slots{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
-  .slot{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:#2e2e2e;border-radius:12px;border-left:3px solid #787878}
-  .slot-d{font-size:13px;color:#fff}
-  .slot-n{font-size:8px;letter-spacing:.15em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
-  .slot-p{font-size:20px;font-weight:700;color:#9a9a9a}
-  .prop-book{width:100%;padding:14px;background:#787878;border:none;border-radius:14px;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#fff;cursor:pointer}
-  .homes-list{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
-  .home-card{overflow:hidden;cursor:pointer}
-  .hc-img{position:relative;height:150px}
-  .hc-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
-  .hc-badge{position:absolute;top:12px;left:0;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
-  .hc-body{padding:16px 20px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-  .hc-body::after{content:'';position:absolute;bottom:0;right:0;width:50%;height:100%;background:rgba(255,255,255,.04);clip-path:polygon(40% 100%,70% 30%,100% 50%,100% 100%)}
-  .hc-top{display:flex;justify-content:space-between}
-  .hc-name{font-size:16px;font-weight:600;color:#fff}
-  .hc-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
-  .hc-stats{display:flex;gap:18px}
-  .hc-sn{font-size:20px;font-weight:700;color:#fff;line-height:1}
-  .hc-sl{font-size:7px;letter-spacing:.15em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px}
-  .hc-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:9px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.8);cursor:pointer;width:100%;position:relative;z-index:2}
-  .cars-cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
-  .car-card{position:relative;overflow:hidden;min-height:138px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:22px 24px 20px;transition:filter .18s}
-  .car-card:active{filter:brightness(1.15)}
-  .car-card::after{content:'';position:absolute;bottom:0;right:0;width:55%;height:100%;background:rgba(255,255,255,.06);clip-path:polygon(30% 100%,60% 40%,80% 65%,100% 20%,100% 100%)}
-  .car-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.3) saturate(.4)}
-  .car-z{position:relative;z-index:2;display:flex;flex-direction:column;gap:14px}
-  .car-top{display:flex;justify-content:space-between}
-  .car-name{font-size:18px;font-weight:600;color:#fff}
-  .car-yr{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:3px}
-  .car-bot{display:flex;justify-content:space-between;align-items:center}
-  .turo-btn{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:8px 16px;text-decoration:none;background:rgba(255,255,255,.08)}
-  .ab-cards{display:flex;flex-direction:column;gap:3px;padding-bottom:80px}
-  .ab-card{overflow:hidden;cursor:pointer}
-  .ab-img-wrap{position:relative;height:150px}
-  .ab-img-wrap img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
-  .ab-sup{position:absolute;top:12px;left:0;background:#FF5A5F;color:#fff;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 14px}
-  .ab-body{background:#2e2e2e;padding:16px 20px 18px;display:flex;flex-direction:column;gap:12px}
-  .ab-top{display:flex;justify-content:space-between}
-  .ab-name{font-size:16px;font-weight:600;color:#fff}
-  .ab-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
-  .ab-row{display:flex;justify-content:space-between;align-items:center}
-  .ab-stars{font-size:12px;color:#FFD700}
-  .ab-rev{font-size:8px;letter-spacing:.1em;color:rgba(255,255,255,.35);margin-top:2px}
-  .ab-link{display:block;background:#FF5A5F;border:none;border-radius:20px;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#fff;text-align:center;text-decoration:none}
-  .wa-strip{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid rgba(255,255,255,.07);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;z-index:10}
-  .wa-l{font-size:9px;letter-spacing:.3em;color:rgba(255,255,255,.3);text-transform:uppercase}
+
+  /* triangle shape right side — exactly like screenshot */
+  .tile::after{
+    content:'';position:absolute;right:0;top:0;bottom:0;width:42%;
+    background:rgba(255,255,255,.08);
+    clip-path:polygon(100% 0,100% 100%,0 100%,40% 50%,0 0);
+  }
+
+  .t1{background:#C85A3A} /* Short Term  */
+  .t2{background:#6B7B6B} /* Long Term   */
+  .t3{background:#4A6A8A} /* Van Rental  */
+  .t4{background:#7A6040} /* Car Rental  */
+  .t5{background:#5A4A6A} /* Souvenirs   */
+  .t6{background:#2E2E2E} /* Airbnb      */
+
+  .tile-top{display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:2}
+  .tile-name{font-size:16px;font-weight:400;color:rgba(255,255,255,.9);letter-spacing:.01em}
+  .tile-arrow{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:15px;color:rgba(255,255,255,.65);flex-shrink:0}
+
+  .tile-bottom{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:2}
+  .tile-num{font-size:56px;font-weight:700;color:#fff;line-height:1;letter-spacing:-.02em}
+  .tile-lbl{font-size:9px;font-weight:300;letter-spacing:.28em;color:rgba(255,255,255,.45);text-transform:uppercase;padding-bottom:8px}
+
+  .gear{position:absolute;bottom:16px;right:20px;font-size:15px;opacity:.18;cursor:pointer;z-index:5}
+  .gear:active{opacity:.5}
+
+  /* WA BAR */
+  .wa-bar{position:fixed;bottom:0;left:0;right:0;background:#0d0d0d;border-top:1px solid rgba(255,255,255,.06);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;z-index:20}
+  .wa-bar:active{background:#161616}
+  .wa-l{font-size:9px;letter-spacing:.3em;color:rgba(255,255,255,.25);text-transform:uppercase}
   .wa-r{font-size:9px;letter-spacing:.3em;color:#C85A3A;text-transform:uppercase}
-  #sheet-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:299}
+
+  /* INNER */
+  .inner-hdr{display:flex;align-items:center;justify-content:space-between;padding:50px 22px 14px;background:#111;position:sticky;top:0;z-index:100}
+  .back{background:none;border:none;color:rgba(255,255,255,.45);font-size:24px;cursor:pointer;line-height:1;padding:4px}
+  .brand{font-size:10px;font-weight:300;letter-spacing:.45em;color:rgba(255,255,255,.3);text-transform:uppercase}
+  .eye{font-size:9px;letter-spacing:.4em;text-transform:uppercase;padding:4px 22px 2px}
+  .ttl{font-size:30px;font-weight:700;color:#fff;letter-spacing:-.01em;padding:0 22px;margin-bottom:12px}
+  .cards{display:flex;flex-direction:column;gap:3px;padding-bottom:72px}
+
+  /* RENTAL CARD */
+  .rc{overflow:hidden;cursor:pointer}
+  .rc-img{position:relative;height:148px}
+  .rc-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+  .rc-badge{position:absolute;top:12px;left:0;font-size:7px;letter-spacing:.2em;text-transform:uppercase;padding:5px 13px}
+  .bg{background:#2d7a4f;color:#fff}.bo{background:#C85A3A;color:#fff}
+  .rc-body{padding:14px 20px 16px;display:flex;flex-direction:column;gap:10px}
+  .rc-name{font-size:17px;font-weight:600;color:#fff}
+  .rc-loc{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.38);text-transform:uppercase;margin-top:2px}
+  .rc-stats{display:flex;gap:18px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07)}
+  .rsn{font-size:20px;font-weight:700;color:#fff;line-height:1}
+  .rsl{font-size:7px;letter-spacing:.15em;color:rgba(255,255,255,.38);text-transform:uppercase;margin-top:2px}
+  .rc-btn{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:9px 0;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.75);cursor:pointer;width:100%}
+  .rc-btn:active{background:rgba(255,255,255,.16)}
+
+  /* VEHICLE CARD */
+  .vc{position:relative;overflow:hidden;min-height:135px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;padding:20px 22px 18px;transition:filter .15s}
+  .vc:active{filter:brightness(1.15)}
+  .vc::after{content:'';position:absolute;right:0;top:0;bottom:0;width:42%;background:rgba(255,255,255,.06);clip-path:polygon(100% 0,100% 100%,0 100%,40% 50%,0 0)}
+  .vc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.28) saturate(.4)}
+  .vz{position:relative;z-index:2;display:flex;flex-direction:column;gap:12px}
+  .vt{display:flex;justify-content:space-between;align-items:flex-start}
+  .vn{font-size:18px;font-weight:600;color:#fff}
+  .vs{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:3px}
+  .vb{display:flex;justify-content:space-between;align-items:center}
+  .vp{font-size:20px;font-weight:700;color:#fff}
+  .vpl{font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.42);text-transform:uppercase;margin-top:2px}
+  .vbtn{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:8px 15px;background:rgba(255,255,255,.07);cursor:pointer}
+
+  /* SOUVENIR CARD */
+  .sc{overflow:hidden;cursor:pointer}
+  .sc-img{height:138px}
+  .sc-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.55)}
+  .sc-body{padding:14px 20px 16px;display:flex;flex-direction:column;gap:10px}
+  .sc-name{font-size:16px;font-weight:600;color:#fff}
+  .sc-desc{font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.38);text-transform:uppercase}
+  .sc-row{display:flex;justify-content:space-between;align-items:center}
+  .sc-price{font-size:20px;font-weight:700;color:#fff}
+  .sc-btn{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:8px 14px;background:rgba(255,255,255,.07);cursor:pointer}
+
+  /* SHEET */
+  .sbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:299}
+  .sheet{position:fixed;bottom:0;left:0;right:0;background:#222;border-radius:24px 24px 0 0;border-top:3px solid #C85A3A;transform:translateY(100%);transition:transform .3s cubic-bezier(.25,.46,.45,.94);z-index:300;max-width:520px;margin:0 auto;padding:22px 22px 46px;max-height:88vh;overflow-y:auto}
+  .sheet.open{transform:translateY(0)}
+  .sh{width:34px;height:4px;border-radius:2px;background:rgba(255,255,255,.14);margin:0 auto 18px}
+  .sx{position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,.3);font-size:26px;cursor:pointer;line-height:1}
+  .simg{width:100%;height:152px;object-fit:cover;border-radius:14px;margin-bottom:13px}
+  .sbadge{display:inline-block;font-size:8px;letter-spacing:.2em;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:9px}
+  .sname{font-size:20px;font-weight:700;color:#fff;margin-bottom:2px}
+  .sarea{font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.38);text-transform:uppercase;margin-bottom:13px}
+  .sstats{display:flex;gap:18px;padding:11px 0;border-top:1px solid rgba(255,255,255,.07);border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:13px}
+  .ssn{font-size:20px;font-weight:700;color:#fff;line-height:1}
+  .ssl{font-size:7px;letter-spacing:.18em;color:rgba(255,255,255,.38);text-transform:uppercase;margin-top:2px}
+  .slbl{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:9px}
+  .slot-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+  .slot-row{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:#2a2a2a;border-radius:12px;border-left:3px solid #C85A3A}
+  .slot-d{font-size:13px;color:#fff}
+  .slot-n{font-size:8px;letter-spacing:.14em;color:rgba(255,255,255,.38);text-transform:uppercase;margin-top:2px}
+  .slot-p{font-size:18px;font-weight:700;color:#9a9a9a}
+  .sbook{width:100%;padding:13px;border:none;border-radius:13px;font-size:9px;letter-spacing:.38em;text-transform:uppercase;color:#fff;cursor:pointer}
 
   /* ADMIN */
-  .admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:none;flex-direction:column}
-  .admin-overlay.open{display:flex}
-  .admin-login{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px}
-  .admin-login-title{font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px}
-  .pin-dots{display:flex;gap:14px;margin-bottom:8px}
-  .pin-dot-el{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .2s}
-  .pin-dot-el.filled{background:#C85A3A}
-  .pin-error{font-size:10px;letter-spacing:.2em;color:#C85A3A;text-transform:uppercase;height:16px;text-align:center}
-  .numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:260px;width:100%}
-  .num-btn{padding:18px 0;background:#242424;border:none;border-radius:14px;font-size:22px;font-weight:300;color:#fff;cursor:pointer;transition:background .15s}
-  .num-btn:active{background:#333}
-  .num-btn.del{font-size:16px;color:rgba(255,255,255,.5)}
-  .admin-content{display:none;flex-direction:column;height:100vh;overflow:hidden}
-  .admin-content.show{display:flex}
-  .admin-header{display:flex;align-items:center;justify-content:space-between;padding:48px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
-  .admin-header-title{font-size:11px;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-  .admin-close-btn{background:none;border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:6px 14px;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.4);cursor:pointer}
-  .admin-tabs{display:flex;gap:3px;padding:3px}
-  .atab{flex:1;padding:10px 0;font-size:9px;letter-spacing:.3em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;transition:background .2s}
-  .atab.on{background:#C85A3A;color:#fff}
-  .atab.off{background:#242424;color:rgba(255,255,255,.35)}
-  .admin-body{flex:1;overflow-y:auto;padding:16px}
-  .settings-card{background:#222;border-radius:16px;padding:18px 20px;margin-bottom:12px}
-  .settings-row{display:flex;justify-content:space-between;align-items:center}
-  .settings-label{font-size:13px;font-weight:500;color:#fff}
-  .settings-sub{font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:3px}
-  .toggle-switch{position:relative;width:48px;height:26px;cursor:pointer}
-  .toggle-switch input{opacity:0;width:0;height:0}
-  .toggle-track{position:absolute;inset:0;background:#333;border-radius:13px;transition:background .2s}
-  .toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-  .toggle-switch input:checked + .toggle-track{background:#2d7a4f}
-  .toggle-switch input:checked ~ .toggle-knob{transform:translateX(22px)}
-  .edit-card{background:#222;border-radius:16px;padding:18px 20px;margin-bottom:10px}
-  .edit-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)}
-  .edit-card-name{font-size:15px;font-weight:600;color:#fff}
-  .del-btn{background:rgba(200,90,58,.15);border:1px solid rgba(200,90,58,.3);border-radius:10px;padding:6px 12px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#C85A3A;cursor:pointer}
-  .del-btn:active{background:rgba(200,90,58,.3)}
-  .edit-row{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
-  .edit-label{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4)}
-  .edit-input{background:#2e2e2e;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;font-size:14px;color:#fff;font-family:inherit;width:100%;outline:none;transition:border-color .2s}
-  .edit-input:focus{border-color:rgba(200,90,58,.5)}
-  .edit-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .save-btn{width:100%;padding:12px;background:#C85A3A;border:none;border-radius:12px;font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:#fff;cursor:pointer;margin-top:4px}
-  .save-btn:active{filter:brightness(1.15)}
-  .badge-select{background:#2e2e2e;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;font-size:13px;color:#fff;font-family:inherit;width:100%;outline:none}
-  .slot-edit{background:#2a2a2a;border-radius:10px;padding:12px;margin-bottom:8px;position:relative}
-  .slot-edit-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-  .slot-del{position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(255,255,255,.3);font-size:16px;cursor:pointer}
-  .add-new-btn{width:100%;padding:16px;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.15);border-radius:14px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.4);cursor:pointer;margin-top:6px}
-  .add-new-btn:active{background:rgba(255,255,255,.08)}
-  .saved-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#2d7a4f;color:#fff;padding:10px 24px;border-radius:20px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;z-index:600;opacity:0;transition:opacity .3s;pointer-events:none}
-  .saved-toast.show{opacity:1}
+  .admbg{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:500;display:none;flex-direction:column}
+  .admbg.open{display:flex}
+  .alog{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px}
+  .adots{display:flex;gap:14px;margin-bottom:6px}
+  .adot{width:13px;height:13px;border-radius:50%;background:rgba(255,255,255,.14);transition:background .18s}
+  .adot.on{background:#C85A3A}
+  .aerr{font-size:9px;letter-spacing:.2em;color:#C85A3A;text-transform:uppercase;height:14px;text-align:center}
+  .npad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:255px;width:100%}
+  .nb{padding:17px 0;background:#1c1c1c;border:none;border-radius:13px;font-size:22px;font-weight:300;color:#fff;cursor:pointer}
+  .nb:active{background:#282828}
+  .acont{display:none;flex-direction:column;height:100vh;overflow:hidden}
+  .acont.show{display:flex}
+  .ahdr{display:flex;align-items:center;justify-content:space-between;padding:48px 20px 14px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .ahtitle{font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.32)}
+  .aclose{background:none;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:6px 13px;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.38);cursor:pointer}
+  .atabs{display:flex;gap:2px;padding:3px;overflow-x:auto;flex-shrink:0}
+  .at{padding:9px 11px;font-size:8px;letter-spacing:.22em;text-transform:uppercase;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;border-radius:9px}
+  .at.on{background:#C85A3A;color:#fff}
+  .at.off{background:#1c1c1c;color:rgba(255,255,255,.32)}
+  .abody{flex:1;overflow-y:auto;padding:13px}
+  .ec{background:#1c1c1c;border-radius:15px;padding:15px 17px;margin-bottom:9px}
+  .ech{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .ecn{font-size:13px;font-weight:600;color:#fff}
+  .db{background:rgba(200,90,58,.13);border:1px solid rgba(200,90,58,.28);border-radius:9px;padding:5px 10px;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:#C85A3A;cursor:pointer}
+  .er{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+  .el{font-size:7px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.32)}
+  .ei{background:#252525;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px 11px;font-size:13px;color:#fff;font-family:inherit;width:100%;outline:none}
+  .ei:focus{border-color:rgba(200,90,58,.38)}
+  .e2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
+  .esel{background:#252525;border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px 11px;font-size:13px;color:#fff;font-family:inherit;width:100%;outline:none}
+  .svbtn{width:100%;padding:10px;background:#C85A3A;border:none;border-radius:11px;font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:#fff;cursor:pointer;margin-top:3px}
+  .sle{background:#222;border-radius:9px;padding:11px;margin-bottom:7px;position:relative}
+  .sler{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+  .slx{position:absolute;top:7px;right:9px;background:none;border:none;color:rgba(255,255,255,.22);font-size:15px;cursor:pointer}
+  .addbtn{width:100%;padding:13px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:13px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.3);cursor:pointer;margin-top:5px}
+  .togw{position:relative;width:46px;height:25px;cursor:pointer;flex-shrink:0}
+  .togw input{opacity:0;width:0;height:0}
+  .togt{position:absolute;inset:0;background:#2a2a2a;border-radius:13px;transition:background .2s}
+  .togk{position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .togw input:checked+.togt{background:#2d7a4f}
+  .togw input:checked~.togk{transform:translateX(21px)}
+  .toast{position:fixed;top:58px;left:50%;transform:translateX(-50%);background:#2d7a4f;color:#fff;padding:9px 22px;border-radius:20px;font-size:9px;letter-spacing:.28em;text-transform:uppercase;z-index:600;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
 </style>
 </head>
 <body>
 
 <script>
-  const TURO_URL  = "https://turo.com";
-  const AIRBNB_URL= "https://airbnb.com";
-  const WHATSAPP  = "https://wa.me/14071234567";
-  const ADMIN_PIN = "1234"; // ← change to your PIN
+  const WA="https://wa.me/14071234567";
+  const AIRBNB="https://airbnb.com";
+  const PIN="1234";
 
-  function defaultData(){
-    return {
-      showPrices: false,
-      cars:[
-        {name:"Tesla Model S",      year:"2024 · Electric · Autopilot",price:"149",color:"#C85A3A",img:"https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=70"},
-        {name:"BMW M4 Competition",  year:"2024 · 503 HP · Sport",      price:"199",color:"#A04830",img:"https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=70"},
-        {name:"Range Rover Sport",   year:"2024 · Luxury SUV",          price:"179",color:"#883C28",img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=700&q=70"},
-      ],
-      homes:[
-        {name:"Luxury Pool Villa",  area:"Dr. Phillips", beds:"5",baths:"4",price:"320",badge:"Available",badgeClass:"badge-green", color:"#696969",px:28,py:52,img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=70",  slots:[{d:"Apr 1 – Apr 7",n:"6 nights",p:"$1,920"},{d:"Apr 14 – Apr 21",n:"7 nights",p:"$2,240"}]},
-        {name:"Modern Lake Estate", area:"Windermere",   beds:"4",baths:"3",price:"280",badge:"Available",badgeClass:"badge-green", color:"#575757",px:18,py:30,img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=70",  slots:[{d:"Apr 5 – Apr 12",n:"7 nights",p:"$1,960"},{d:"May 1 – May 8",n:"7 nights",p:"$1,960"}]},
-        {name:"Garden Retreat",     area:"College Park", beds:"3",baths:"2",price:"180",badge:"2 Left",   badgeClass:"badge-orange",color:"#484848",px:55,py:25,img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&q=70",slots:[{d:"Apr 10 – Apr 14",n:"4 nights",p:"$720"}]},
-        {name:"Downtown Loft",      area:"Downtown",     beds:"2",baths:"2",price:"220",badge:"Available",badgeClass:"badge-green", color:"#505050",px:60,py:44,img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70",  slots:[{d:"Apr 3 – Apr 8",n:"5 nights",p:"$1,100"}]},
-        {name:"Lakefront Escape",   area:"Lake Nona",    beds:"4",baths:"3",price:"260",badge:"Available",badgeClass:"badge-green", color:"#606060",px:75,py:72,img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70", slots:[{d:"Apr 7 – Apr 14",n:"7 nights",p:"$1,820"}]},
-      ],
-      airbnbs:[
-        {name:"Downtown Loft",    area:"Downtown Orlando",price:"120",rating:"4.97",reviews:"134",img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70"},
-        {name:"Pool House Oasis", area:"Dr. Phillips",    price:"210",rating:"5.0", reviews:"89", img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70"},
-        {name:"Cozy Lake View",   area:"Windermere",      price:"155",rating:"4.95",reviews:"212",img:"https://images.unsplash.com/photo-1501183638710-841dd1904471?w=700&q=70"},
-      ]
-    };
-  }
-  let DATA = JSON.parse(localStorage.getItem('os_data')||'null') || defaultData();
-  function saveData(){ localStorage.setItem('os_data',JSON.stringify(DATA)); }
+  function def(){return{
+    showPrices:false,
+    shortTerm:[
+      {name:"Luxury Pool Villa", area:"Dr. Phillips",beds:"5",baths:"4",price:"320",badge:"Available",bc:"bg",img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=70",slots:[{d:"Apr 1–Apr 7",n:"6 nights",p:"$1,920"},{d:"Apr 14–Apr 21",n:"7 nights",p:"$2,240"}]},
+      {name:"Modern Lake Estate",area:"Windermere",  beds:"4",baths:"3",price:"280",badge:"Available",bc:"bg",img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=70",slots:[{d:"Apr 5–Apr 12",n:"7 nights",p:"$1,960"}]},
+      {name:"Garden Retreat",    area:"College Park",beds:"3",baths:"2",price:"180",badge:"2 Left",   bc:"bo",img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&q=70",slots:[{d:"Apr 10–Apr 14",n:"4 nights",p:"$720"}]},
+    ],
+    longTerm:[
+      {name:"Sunny 2BR Apt",area:"Downtown",    beds:"2",baths:"1",price:"1800",badge:"Available",bc:"bg",img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=70",lease:"12 mo",slots:[]},
+      {name:"Family Home",  area:"Dr. Phillips",beds:"4",baths:"3",price:"2800",badge:"Available",bc:"bg",img:"https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=70",lease:"12 mo",slots:[]},
+    ],
+    vans:[
+      {name:"Mercedes Sprinter",year:"2023 · 12 Pass",price:"199",color:"#4A6A8A",img:"https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=700&q=70"},
+      {name:"Ford Transit XL",  year:"2024 · 15 Pass",price:"179",color:"#3A5A7A",img:"https://images.unsplash.com/photo-1543465077-db45d34b88a5?w=700&q=70"},
+    ],
+    cars:[
+      {name:"Tesla Model S",     year:"2024 · Electric",   price:"149",color:"#7A6040",img:"https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=70"},
+      {name:"BMW M4",            year:"2024 · 503 HP",     price:"199",color:"#6A5030",img:"https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=70"},
+      {name:"Range Rover Sport", year:"2024 · Luxury SUV", price:"179",color:"#5A4020",img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=700&q=70"},
+    ],
+    souvenirs:[
+      {name:"Orlando T-Shirt",desc:"100% Cotton · S–XXL",price:"25",img:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700&q=70"},
+      {name:"Sunshine Mug",   desc:"Ceramic · 12oz",    price:"18",img:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=700&q=70"},
+      {name:"Keychain Set",   desc:"Metal · Pack of 3", price:"12",img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=70"},
+    ]
+  };}
+  let D=JSON.parse(localStorage.getItem('os_v4')||'null')||def();
+  const sv=()=>localStorage.setItem('os_v4',JSON.stringify(D));
 </script>
 
 <!-- LANDING -->
 <div id="landing" class="page active">
   <div class="top-bar"><span>Orlando</span><span>Superhost</span></div>
   <div class="tiles-wrap">
-    <div class="tile tile-cars" onclick="show('cars')">
-      <div class="tile-top"><div class="tile-name">Cars</div><div class="circle-btn">→</div></div>
-      <div class="tile-bottom"><div class="tile-number" id="cnt-cars">—</div><div class="tile-avail">Available</div></div>
-      <div class="admin-gear" onclick="event.stopPropagation();openAdmin()">⚙</div>
+
+    <div class="tile t1" onclick="go('short')">
+      <div class="tile-top"><div class="tile-name">Short Term</div><div class="tile-arrow">→</div></div>
+      <div class="tile-bottom"><div class="tile-num" id="n1">3</div><div class="tile-lbl">Available</div></div>
+      <div class="gear" onclick="event.stopPropagation();openAdm()">⚙</div>
     </div>
-    <div class="tile tile-homes" onclick="show('homes')">
-      <div class="tile-top"><div class="tile-name">Homes</div><div class="circle-btn">→</div></div>
-      <div class="tile-bottom"><div class="tile-number" id="cnt-homes">—</div><div class="tile-avail">Available</div></div>
+
+    <div class="tile t2" onclick="go('long')">
+      <div class="tile-top"><div class="tile-name">Long Term</div><div class="tile-arrow">→</div></div>
+      <div class="tile-bottom"><div class="tile-num" id="n2">2</div><div class="tile-lbl">Available</div></div>
     </div>
-    <div class="tile tile-airbnb" onclick="show('airbnb')">
-      <div class="tile-top"><div class="tile-name">Airbnb</div><div class="circle-btn">→</div></div>
-      <div class="tile-bottom"><div class="tile-number">5★</div><div class="tile-avail">Superhost</div></div>
+
+    <div class="tile t3" onclick="go('vans')">
+      <div class="tile-top"><div class="tile-name">Van Rental</div><div class="tile-arrow">→</div></div>
+      <div class="tile-bottom"><div class="tile-num" id="n3">2</div><div class="tile-lbl">Available</div></div>
     </div>
+
+    <div class="tile t4" onclick="go('cars')">
+      <div class="tile-top"><div class="tile-name">Car Rental</div><div class="tile-arrow">→</div></div>
+      <div class="tile-bottom"><div class="tile-num" id="n4">3</div><div class="tile-lbl">Available</div></div>
+    </div>
+
+    <div class="tile t5" onclick="go('souv')">
+      <div class="tile-top"><div class="tile-name">Souvenirs</div><div class="tile-arrow">→</div></div>
+      <div class="tile-bottom"><div class="tile-num" id="n5">3</div><div class="tile-lbl">Items</div></div>
+    </div>
+
+    <div class="tile t6" onclick="window.open(AIRBNB,'_blank')">
+      <div class="tile-top"><div class="tile-name">Airbnb</div><div class="tile-arrow">→</div></div>
+      <div class="tile-bottom"><div class="tile-num">5★</div><div class="tile-lbl">Superhost</div></div>
+    </div>
+
   </div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
+  <div class="wa-bar" onclick="window.open(WA,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
 </div>
 
-<!-- HOMES -->
-<div id="homes" class="page" style="overflow:hidden">
-  <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">←</button>
-    <div class="h-title">Orlando Superhost</div>
-    <div style="width:40px"></div>
-  </div>
-  <div class="view-toggle">
-    <button class="toggle-btn active"   id="btn-map"  onclick="switchView('map')">📍 Map</button>
-    <button class="toggle-btn inactive" id="btn-list" onclick="switchView('list')">☰ List</button>
-  </div>
-  <div id="map-view" style="flex:1;display:flex;flex-direction:column">
-    <div class="map-wrap">
-      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.65%2C28.35%2C-81.20%2C28.65&layer=transportmap" style="position:absolute;inset:0;width:100%;height:100%;border:none;filter:brightness(.35) saturate(.4) contrast(1.2);pointer-events:none"></iframe>
-      <div class="map-grid"></div>
-      <div id="pins"></div>
-      <div class="map-label" style="left:22%;top:24%">Windermere</div>
-      <div class="map-label" style="left:24%;top:47%">Dr. Phillips</div>
-      <div class="map-label" style="left:52%;top:20%">College Park</div>
-      <div class="map-label" style="left:56%;top:40%">Downtown</div>
-      <div class="map-label" style="left:70%;top:68%">Lake Nona</div>
-    </div>
-  </div>
-  <div id="list-view" style="display:none;flex:1;overflow-y:auto;padding-bottom:60px">
-    <div class="homes-list" id="homes-list"></div>
-  </div>
+<!-- SHORT TERM -->
+<div id="short" class="page">
+  <div class="inner-hdr"><button class="back" onclick="go('landing')">←</button><div class="brand">Orlando Superhost</div><div style="width:36px"></div></div>
+  <div class="eye" style="color:#C85A3A">Short Term · Orlando FL</div>
+  <div class="ttl">Short Term</div>
+  <div class="cards" id="l-short"></div>
+  <div class="wa-bar" onclick="window.open(WA,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
 </div>
 
-<!-- PROPERTY SHEET -->
-<div id="sheet-overlay" onclick="closeSheet()"></div>
-<div class="prop-sheet" id="prop-sheet">
-  <div class="prop-handle"></div>
-  <button class="prop-close" onclick="closeSheet()">×</button>
-  <div id="prop-img-wrap"></div>
-  <div id="prop-badge-wrap"></div>
-  <div class="prop-name" id="prop-name"></div>
-  <div class="prop-area" id="prop-area"></div>
-  <div class="prop-stats" id="prop-stats"></div>
-  <div class="slots-title">Available Dates</div>
-  <div class="slots" id="prop-slots"></div>
-  <button class="prop-book" onclick="window.open(WHATSAPP,'_blank')">Book via WhatsApp →</button>
+<!-- LONG TERM -->
+<div id="long" class="page">
+  <div class="inner-hdr"><button class="back" onclick="go('landing')">←</button><div class="brand">Orlando Superhost</div><div style="width:36px"></div></div>
+  <div class="eye" style="color:#6B7B6B">Long Term · Orlando FL</div>
+  <div class="ttl">Long Term</div>
+  <div class="cards" id="l-long"></div>
+  <div class="wa-bar" onclick="window.open(WA,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
+</div>
+
+<!-- VANS -->
+<div id="vans" class="page">
+  <div class="inner-hdr"><button class="back" onclick="go('landing')">←</button><div class="brand">Orlando Superhost</div><div style="width:36px"></div></div>
+  <div class="eye" style="color:#4A6A8A">Van Rental · Orlando FL</div>
+  <div class="ttl">Vans</div>
+  <div class="cards" id="l-vans"></div>
+  <div class="wa-bar" onclick="window.open(WA,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
 </div>
 
 <!-- CARS -->
 <div id="cars" class="page">
-  <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">←</button>
-    <div class="h-title">Orlando Superhost</div>
-    <div style="width:40px"></div>
-  </div>
-  <div style="padding:4px 24px 16px">
-    <div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#C85A3A;margin-bottom:6px">Our Fleet · Orlando FL</div>
-    <div style="font-size:30px;font-weight:700;letter-spacing:-.01em">Cars</div>
-  </div>
-  <div class="cars-cards" id="cars-list"></div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
+  <div class="inner-hdr"><button class="back" onclick="go('landing')">←</button><div class="brand">Orlando Superhost</div><div style="width:36px"></div></div>
+  <div class="eye" style="color:#7A6040">Car Rental · Orlando FL</div>
+  <div class="ttl">Cars</div>
+  <div class="cards" id="l-cars"></div>
+  <div class="wa-bar" onclick="window.open(WA,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
 </div>
 
-<!-- AIRBNB -->
-<div id="airbnb" class="page">
-  <div class="inner-header">
-    <button class="back-btn" onclick="show('landing')">←</button>
-    <div class="h-title">Orlando Superhost</div>
-    <div style="width:40px"></div>
-  </div>
-  <div style="padding:4px 24px 16px">
-    <div style="font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:#FF5A5F;margin-bottom:6px">Short Stays · Orlando FL</div>
-    <div style="font-size:30px;font-weight:700;letter-spacing:-.01em">Airbnb</div>
-  </div>
-  <div class="ab-cards" id="airbnb-list"></div>
-  <div class="wa-strip" onclick="window.open(WHATSAPP,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
+<!-- SOUVENIRS -->
+<div id="souv" class="page">
+  <div class="inner-hdr"><button class="back" onclick="go('landing')">←</button><div class="brand">Orlando Superhost</div><div style="width:36px"></div></div>
+  <div class="eye" style="color:#7A5A8A">Souvenirs · Orlando FL</div>
+  <div class="ttl">Souvenirs</div>
+  <div class="cards" id="l-souv"></div>
+  <div class="wa-bar" onclick="window.open(WA,'_blank')"><div class="wa-l">Questions?</div><div class="wa-r">WhatsApp Us →</div></div>
 </div>
 
-<!-- ADMIN PANEL -->
-<div class="admin-overlay" id="admin-overlay">
-  <div class="admin-login" id="admin-login">
-    <div style="font-size:40px;opacity:.5;margin-bottom:8px">🔐</div>
-    <div class="admin-login-title">Admin Access</div>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot-el" id="d0"></div><div class="pin-dot-el" id="d1"></div>
-      <div class="pin-dot-el" id="d2"></div><div class="pin-dot-el" id="d3"></div>
-    </div>
-    <div class="pin-error" id="pin-error"></div>
-    <div class="numpad">
-      <button class="num-btn" onclick="pp('1')">1</button>
-      <button class="num-btn" onclick="pp('2')">2</button>
-      <button class="num-btn" onclick="pp('3')">3</button>
-      <button class="num-btn" onclick="pp('4')">4</button>
-      <button class="num-btn" onclick="pp('5')">5</button>
-      <button class="num-btn" onclick="pp('6')">6</button>
-      <button class="num-btn" onclick="pp('7')">7</button>
-      <button class="num-btn" onclick="pp('8')">8</button>
-      <button class="num-btn" onclick="pp('9')">9</button>
-      <button class="num-btn" style="font-size:11px;color:rgba(255,255,255,.35)" onclick="pp('x')">Cancel</button>
-      <button class="num-btn" onclick="pp('0')">0</button>
-      <button class="num-btn del" onclick="pp('d')">⌫</button>
-    </div>
-  </div>
-  <div class="admin-content" id="admin-content">
-    <div class="admin-header">
-      <div class="admin-header-title">Admin Panel</div>
-      <button class="admin-close-btn" onclick="closeAdmin()">Close ×</button>
-    </div>
-    <div class="admin-tabs">
-      <button class="atab on"  id="at-s" onclick="aTab('s')">Settings</button>
-      <button class="atab off" id="at-h" onclick="aTab('h')">Homes</button>
-      <button class="atab off" id="at-c" onclick="aTab('c')">Cars</button>
-      <button class="atab off" id="at-a" onclick="aTab('a')">Airbnb</button>
-    </div>
-    <div class="admin-body" id="admin-body"></div>
-  </div>
+<!-- SHEET -->
+<div class="sbg" id="sbg" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sh"></div>
+  <button class="sx" onclick="closeSheet()">×</button>
+  <div id="s-img"></div><div id="s-badge"></div>
+  <div class="sname" id="s-name"></div>
+  <div class="sarea" id="s-area"></div>
+  <div class="sstats" id="s-stats"></div>
+  <div class="slbl">Available Dates</div>
+  <div class="slot-list" id="s-slots"></div>
+  <button class="sbook" id="s-book" onclick="window.open(WA,'_blank')">Book via WhatsApp →</button>
 </div>
 
-<div class="saved-toast" id="saved-toast">Saved ✓</div>
+<!-- ADMIN -->
+<div class="admbg" id="adm">
+  <div class="alog" id="alog">
+    <div style="font-size:36px;opacity:.35;margin-bottom:6px">🔐</div>
+    <div style="font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px">Admin</div>
+    <div class="adots" id="adots"><div class="adot" id="d0"></div><div class="adot" id="d1"></div><div class="adot" id="d2"></div><div class="adot" id="d3"></div></div>
+    <div class="aerr" id="aerr"></div>
+    <div class="npad">
+      <button class="nb" onclick="kp('1')">1</button><button class="nb" onclick="kp('2')">2</button><button class="nb" onclick="kp('3')">3</button>
+      <button class="nb" onclick="kp('4')">4</button><button class="nb" onclick="kp('5')">5</button><button class="nb" onclick="kp('6')">6</button>
+      <button class="nb" onclick="kp('7')">7</button><button class="nb" onclick="kp('8')">8</button><button class="nb" onclick="kp('9')">9</button>
+      <button class="nb" style="font-size:10px;color:rgba(255,255,255,.28)" onclick="closeAdm()">Cancel</button>
+      <button class="nb" onclick="kp('0')">0</button>
+      <button class="nb" style="font-size:15px;color:rgba(255,255,255,.38)" onclick="kp('x')">⌫</button>
+    </div>
+  </div>
+  <div class="acont" id="acont">
+    <div class="ahdr"><div class="ahtitle">Admin Panel</div><button class="aclose" onclick="closeAdm()">Close ×</button></div>
+    <div class="atabs">
+      <button class="at on"  id="at-s"  onclick="aTab('s')">Settings</button>
+      <button class="at off" id="at-st" onclick="aTab('st')">Short Term</button>
+      <button class="at off" id="at-lt" onclick="aTab('lt')">Long Term</button>
+      <button class="at off" id="at-v"  onclick="aTab('v')">Vans</button>
+      <button class="at off" id="at-c"  onclick="aTab('c')">Cars</button>
+      <button class="at off" id="at-sv" onclick="aTab('sv')">Souvenirs</button>
+    </div>
+    <div class="abody" id="abody"></div>
+  </div>
+</div>
+<div class="toast" id="toast">Saved ✓</div>
 
 <script>
-  /* PIN */
+  function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+  function toast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+
+  // PIN
   let pin='';
-  function pp(v){
-    if(v==='x'){closeAdmin();return}
-    if(v==='d'){pin=pin.slice(0,-1);dots();return}
-    if(pin.length>=4)return;
-    pin+=v; dots();
-    if(pin.length===4) checkPin();
-  }
-  function dots(){ for(let i=0;i<4;i++) document.getElementById('d'+i).classList.toggle('filled',i<pin.length); }
-  function checkPin(){
-    if(pin===ADMIN_PIN){
-      document.getElementById('pin-error').textContent='';
-      document.getElementById('admin-login').style.display='none';
-      document.getElementById('admin-content').classList.add('show');
-      aTab('s');
-    } else {
-      document.getElementById('pin-error').textContent='Wrong PIN';
-      pin=''; dots();
-    }
-  }
+  function kp(v){if(v==='x'){pin=pin.slice(0,-1);dots();return}if(pin.length>=4)return;pin+=v;dots();if(pin.length===4)chk();}
+  function dots(){for(let i=0;i<4;i++)document.getElementById('d'+i).classList.toggle('on',i<pin.length);}
+  function chk(){if(pin===PIN){document.getElementById('aerr').textContent='';document.getElementById('alog').style.display='none';document.getElementById('acont').classList.add('show');aTab('s');}else{document.getElementById('aerr').textContent='Wrong PIN';pin='';dots();}}
+  function openAdm(){pin='';dots();document.getElementById('aerr').textContent='';document.getElementById('alog').style.display='flex';document.getElementById('acont').classList.remove('show');document.getElementById('adm').classList.add('open');}
+  function closeAdm(){document.getElementById('adm').classList.remove('open');}
 
-  function openAdmin(){
-    pin=''; dots();
-    document.getElementById('pin-error').textContent='';
-    document.getElementById('admin-login').style.display='flex';
-    document.getElementById('admin-content').classList.remove('show');
-    document.getElementById('admin-overlay').classList.add('open');
-  }
-  function closeAdmin(){ document.getElementById('admin-overlay').classList.remove('open'); }
-
-  function toast(){
-    const t=document.getElementById('saved-toast');
-    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000);
-  }
-
-  /* TABS */
+  // ADMIN TABS
   function aTab(t){
-    ['s','h','c','a'].forEach(x=>{ document.getElementById('at-'+x).className='atab '+(x===t?'on':'off'); });
-    const b=document.getElementById('admin-body');
-    if(t==='s') renderSettings(b);
-    if(t==='h') renderAHomes(b);
-    if(t==='c') renderACars(b);
-    if(t==='a') renderAAirbnb(b);
+    ['s','st','lt','v','c','sv'].forEach(x=>document.getElementById('at-'+x).className='at '+(x===t?'on':'off'));
+    const b=document.getElementById('abody');
+    if(t==='s') rSet(b);
+    if(t==='st') rRent(b,'shortTerm','Short Term',true);
+    if(t==='lt') rRent(b,'longTerm','Long Term',false);
+    if(t==='v')  rVeh(b,'vans','Van');
+    if(t==='c')  rVeh(b,'cars','Car');
+    if(t==='sv') rSouv(b);
   }
 
-  /* SETTINGS */
-  function renderSettings(b){
+  function rSet(b){
     b.innerHTML=`
-      <div class="settings-card">
-        <div class="settings-row">
-          <div><div class="settings-label">Show Prices</div><div class="settings-sub">OFF = people must call you</div></div>
-          <label class="toggle-switch">
-            <input type="checkbox" onchange="DATA.showPrices=this.checked;saveData();toast();renderApp()" ${DATA.showPrices?'checked':''}>
-            <div class="toggle-track"></div><div class="toggle-knob"></div>
-          </label>
+      <div class="ec">
+        <div class="ech">
+          <div><div class="ecn">Show Prices</div><div style="font-size:8px;letter-spacing:.15em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-top:3px">OFF = people must call</div></div>
+          <label class="togw"><input type="checkbox" onchange="D.showPrices=this.checked;sv();toast();renderApp()" ${D.showPrices?'checked':''}><div class="togt"></div><div class="togk"></div></label>
         </div>
       </div>
-      <div class="settings-card" style="margin-top:8px">
-        <div style="font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.35);text-transform:uppercase;line-height:2.2">
-          Cars: ${DATA.cars.length} &nbsp;·&nbsp; Homes: ${DATA.homes.length} &nbsp;·&nbsp; Airbnb: ${DATA.airbnbs.length}<br>
-          Prices: ${DATA.showPrices?'✓ Visible':'✗ Hidden — call to ask'}
-        </div>
-      </div>`;
+      <div class="ec"><div style="font-size:8px;letter-spacing:.18em;color:rgba(255,255,255,.28);line-height:2.2">Short: ${D.shortTerm.length} · Long: ${D.longTerm.length}<br>Vans: ${D.vans.length} · Cars: ${D.cars.length} · Souvenirs: ${D.souvenirs.length}<br>Prices: ${D.showPrices?'✓ Visible':'✗ Hidden'}</div></div>`;
   }
 
-  /* ADMIN HOMES */
-  function renderAHomes(b){
-    b.innerHTML = DATA.homes.map((h,i)=>`
-      <div class="edit-card">
-        <div class="edit-card-header">
-          <div class="edit-card-name">🏡 ${h.name}</div>
-          <button class="del-btn" onclick="delItem('homes',${i})">Delete</button>
+  function rRent(b,key,label,hasSlots){
+    b.innerHTML=D[key].map((h,i)=>`
+      <div class="ec">
+        <div class="ech"><div class="ecn">${h.name}</div><button class="db" onclick="del('${key}',${i})">Delete</button></div>
+        <div class="er"><div class="el">Name</div><input class="ei" value="${h.name}" oninput="D['${key}'][${i}].name=this.value"></div>
+        <div class="er"><div class="el">Area</div><input class="ei" value="${h.area||''}" oninput="D['${key}'][${i}].area=this.value"></div>
+        <div class="e2">
+          <div class="er"><div class="el">Beds</div><input class="ei" type="number" value="${h.beds||''}" oninput="D['${key}'][${i}].beds=this.value"></div>
+          <div class="er"><div class="el">Baths</div><input class="ei" type="number" value="${h.baths||''}" oninput="D['${key}'][${i}].baths=this.value"></div>
         </div>
-        <div class="edit-row"><div class="edit-label">Name</div><input class="edit-input" value="${h.name}" oninput="DATA.homes[${i}].name=this.value"></div>
-        <div class="edit-row"><div class="edit-label">Area</div><input class="edit-input" value="${h.area}" oninput="DATA.homes[${i}].area=this.value"></div>
-        <div class="edit-row-2">
-          <div class="edit-row"><div class="edit-label">Beds</div><input class="edit-input" type="number" value="${h.beds}" oninput="DATA.homes[${i}].beds=this.value"></div>
-          <div class="edit-row"><div class="edit-label">Baths</div><input class="edit-input" type="number" value="${h.baths}" oninput="DATA.homes[${i}].baths=this.value"></div>
-        </div>
-        <div class="edit-row"><div class="edit-label">Price / Night ($)</div><input class="edit-input" type="number" value="${h.price}" oninput="DATA.homes[${i}].price=this.value"></div>
-        <div class="edit-row">
-          <div class="edit-label">Status</div>
-          <select class="badge-select" onchange="DATA.homes[${i}].badge=this.value;DATA.homes[${i}].badgeClass=this.value==='Available'?'badge-green':'badge-orange'">
+        <div class="er"><div class="el">Price</div><input class="ei" value="${h.price||''}" oninput="D['${key}'][${i}].price=this.value"></div>
+        ${key==='longTerm'?`<div class="er"><div class="el">Lease</div><input class="ei" value="${h.lease||''}" oninput="D['${key}'][${i}].lease=this.value"></div>`:''}
+        <div class="er"><div class="el">Status</div>
+          <select class="esel" onchange="D['${key}'][${i}].badge=this.value;D['${key}'][${i}].bc=this.value==='Available'?'bg':'bo'">
             <option ${h.badge==='Available'?'selected':''}>Available</option>
             <option ${h.badge==='2 Left'?'selected':''}>2 Left</option>
             <option ${h.badge==='Booked'?'selected':''}>Booked</option>
             <option ${h.badge==='Coming Soon'?'selected':''}>Coming Soon</option>
           </select>
         </div>
-        <div class="edit-row"><div class="edit-label">Photo URL</div><input class="edit-input" value="${h.img||''}" placeholder="https://..." oninput="DATA.homes[${i}].img=this.value"></div>
-        <div style="margin-top:12px;margin-bottom:8px">
-          <div class="edit-label" style="margin-bottom:8px">Date Slots</div>
-          <div id="sl-${i}">${renderSlots(i)}</div>
-          <button class="add-new-btn" style="padding:10px;margin-top:4px" onclick="addSlot(${i})">+ Add Date</button>
-        </div>
-        <button class="save-btn" onclick="saveData();toast();renderApp()">Save ✓</button>
+        <div class="er"><div class="el">Photo URL</div><input class="ei" value="${h.img||''}" placeholder="https://..." oninput="D['${key}'][${i}].img=this.value"></div>
+        ${hasSlots?`<div style="margin-top:9px;margin-bottom:6px"><div class="el" style="margin-bottom:7px">Date Slots</div><div id="sl-${i}">${rSl(key,i)}</div><button class="addbtn" style="padding:8px;margin-top:3px" onclick="addSl('${key}',${i})">+ Add Date</button></div>`:''}
+        <button class="svbtn" onclick="sv();toast();renderApp()">Save ✓</button>
       </div>`).join('')
-    +`<button class="add-new-btn" onclick="addHome()">+ Add New Home</button>`;
+    +`<button class="addbtn" onclick="addR('${key}','${label}')">+ Add New ${label}</button>`;
   }
 
-  function renderSlots(i){
-    return DATA.homes[i].slots.map((s,j)=>`
-      <div class="slot-edit">
-        <button class="slot-del" onclick="delSlot(${i},${j})">×</button>
-        <div class="slot-edit-row">
-          <div class="edit-row"><div class="edit-label">Dates</div><input class="edit-input" value="${s.d}" oninput="DATA.homes[${i}].slots[${j}].d=this.value"></div>
-          <div class="edit-row"><div class="edit-label">Nights</div><input class="edit-input" value="${s.n}" oninput="DATA.homes[${i}].slots[${j}].n=this.value"></div>
-        </div>
-        <div class="edit-row"><div class="edit-label">Total Price</div><input class="edit-input" value="${s.p}" oninput="DATA.homes[${i}].slots[${j}].p=this.value"></div>
-      </div>`).join('');
-  }
+  function rSl(key,i){return(D[key][i].slots||[]).map((s,j)=>`<div class="sle"><button class="slx" onclick="delSl('${key}',${i},${j})">×</button><div class="sler"><div class="er"><div class="el">Dates</div><input class="ei" value="${s.d}" oninput="D['${key}'][${i}].slots[${j}].d=this.value"></div><div class="er"><div class="el">Nights</div><input class="ei" value="${s.n}" oninput="D['${key}'][${i}].slots[${j}].n=this.value"></div></div><div class="er"><div class="el">Total Price</div><input class="ei" value="${s.p}" oninput="D['${key}'][${i}].slots[${j}].p=this.value"></div></div>`).join('');}
+  function addSl(key,i){if(!D[key][i].slots)D[key][i].slots=[];D[key][i].slots.push({d:'',n:'',p:''});document.getElementById('sl-'+i).innerHTML=rSl(key,i);}
+  function delSl(key,i,j){D[key][i].slots.splice(j,1);document.getElementById('sl-'+i).innerHTML=rSl(key,i);}
+  function addR(key,label){D[key].push({name:'New '+label,area:'Orlando',beds:'3',baths:'2',price:'200',badge:'Available',bc:'bg',img:'',slots:[],lease:'12 mo'});sv();toast();renderApp();aTab(key==='shortTerm'?'st':'lt');}
 
-  function addSlot(i){ DATA.homes[i].slots.push({d:'',n:'',p:''}); document.getElementById('sl-'+i).innerHTML=renderSlots(i); }
-  function delSlot(i,j){ DATA.homes[i].slots.splice(j,1); document.getElementById('sl-'+i).innerHTML=renderSlots(i); }
-  function addHome(){
-    DATA.homes.push({name:'New Property',area:'Orlando',beds:'3',baths:'2',price:'200',badge:'Available',badgeClass:'badge-green',color:'#555',px:50,py:50,img:'',slots:[]});
-    saveData(); renderAHomes(document.getElementById('admin-body')); toast(); renderApp();
-  }
-
-  /* ADMIN CARS */
-  function renderACars(b){
-    b.innerHTML = DATA.cars.map((c,i)=>`
-      <div class="edit-card">
-        <div class="edit-card-header">
-          <div class="edit-card-name">🚗 ${c.name}</div>
-          <button class="del-btn" onclick="delItem('cars',${i})">Delete</button>
-        </div>
-        <div class="edit-row"><div class="edit-label">Car Name</div><input class="edit-input" value="${c.name}" oninput="DATA.cars[${i}].name=this.value"></div>
-        <div class="edit-row"><div class="edit-label">Year / Details</div><input class="edit-input" value="${c.year}" oninput="DATA.cars[${i}].year=this.value"></div>
-        <div class="edit-row"><div class="edit-label">Price / Day ($)</div><input class="edit-input" type="number" value="${c.price}" oninput="DATA.cars[${i}].price=this.value"></div>
-        <div class="edit-row"><div class="edit-label">Photo URL</div><input class="edit-input" value="${c.img||''}" placeholder="https://..." oninput="DATA.cars[${i}].img=this.value"></div>
-        <button class="save-btn" onclick="saveData();toast();renderApp()">Save ✓</button>
+  function rVeh(b,key,label){
+    b.innerHTML=D[key].map((v,i)=>`
+      <div class="ec">
+        <div class="ech"><div class="ecn">${v.name}</div><button class="db" onclick="del('${key}',${i})">Delete</button></div>
+        <div class="er"><div class="el">Name</div><input class="ei" value="${v.name}" oninput="D['${key}'][${i}].name=this.value"></div>
+        <div class="er"><div class="el">Year / Details</div><input class="ei" value="${v.year||''}" oninput="D['${key}'][${i}].year=this.value"></div>
+        <div class="er"><div class="el">Price / Day ($)</div><input class="ei" type="number" value="${v.price}" oninput="D['${key}'][${i}].price=this.value"></div>
+        <div class="er"><div class="el">Photo URL</div><input class="ei" value="${v.img||''}" placeholder="https://..." oninput="D['${key}'][${i}].img=this.value"></div>
+        <button class="svbtn" onclick="sv();toast();renderApp()">Save ✓</button>
       </div>`).join('')
-    +`<button class="add-new-btn" onclick="addCar()">+ Add New Car</button>`;
+    +`<button class="addbtn" onclick="addV('${key}','${label}')">+ Add New ${label}</button>`;
   }
-  function addCar(){
-    DATA.cars.push({name:'New Car',year:'2024',price:'150',color:'#C85A3A',img:''});
-    saveData(); renderACars(document.getElementById('admin-body')); toast(); renderApp();
-  }
+  function addV(key,label){D[key].push({name:'New '+label,year:'2024',price:'150',color:key==='vans'?'#4A6A8A':'#7A6040',img:''});sv();toast();renderApp();aTab(key==='vans'?'v':'c');}
 
-  /* ADMIN AIRBNB */
-  function renderAAirbnb(b){
-    b.innerHTML = DATA.airbnbs.map((a,i)=>`
-      <div class="edit-card">
-        <div class="edit-card-header">
-          <div class="edit-card-name">🏠 ${a.name}</div>
-          <button class="del-btn" onclick="delItem('airbnbs',${i})">Delete</button>
-        </div>
-        <div class="edit-row"><div class="edit-label">Listing Name</div><input class="edit-input" value="${a.name}" oninput="DATA.airbnbs[${i}].name=this.value"></div>
-        <div class="edit-row"><div class="edit-label">Area</div><input class="edit-input" value="${a.area}" oninput="DATA.airbnbs[${i}].area=this.value"></div>
-        <div class="edit-row"><div class="edit-label">Price / Night ($)</div><input class="edit-input" type="number" value="${a.price}" oninput="DATA.airbnbs[${i}].price=this.value"></div>
-        <div class="edit-row-2">
-          <div class="edit-row"><div class="edit-label">Rating</div><input class="edit-input" value="${a.rating}" oninput="DATA.airbnbs[${i}].rating=this.value"></div>
-          <div class="edit-row"><div class="edit-label">Reviews</div><input class="edit-input" value="${a.reviews}" oninput="DATA.airbnbs[${i}].reviews=this.value"></div>
-        </div>
-        <div class="edit-row"><div class="edit-label">Photo URL</div><input class="edit-input" value="${a.img||''}" placeholder="https://..." oninput="DATA.airbnbs[${i}].img=this.value"></div>
-        <button class="save-btn" onclick="saveData();toast();renderApp()">Save ✓</button>
+  function rSouv(b){
+    b.innerHTML=D.souvenirs.map((s,i)=>`
+      <div class="ec">
+        <div class="ech"><div class="ecn">${s.name}</div><button class="db" onclick="del('souvenirs',${i})">Delete</button></div>
+        <div class="er"><div class="el">Name</div><input class="ei" value="${s.name}" oninput="D.souvenirs[${i}].name=this.value"></div>
+        <div class="er"><div class="el">Description</div><input class="ei" value="${s.desc||''}" oninput="D.souvenirs[${i}].desc=this.value"></div>
+        <div class="er"><div class="el">Price ($)</div><input class="ei" type="number" value="${s.price}" oninput="D.souvenirs[${i}].price=this.value"></div>
+        <div class="er"><div class="el">Photo URL</div><input class="ei" value="${s.img||''}" placeholder="https://..." oninput="D.souvenirs[${i}].img=this.value"></div>
+        <button class="svbtn" onclick="sv();toast();renderApp()">Save ✓</button>
       </div>`).join('')
-    +`<button class="add-new-btn" onclick="addAirbnb()">+ Add New Listing</button>`;
+    +`<button class="addbtn" onclick="addSv()">+ Add New Item</button>`;
   }
-  function addAirbnb(){
-    DATA.airbnbs.push({name:'New Listing',area:'Orlando',price:'150',rating:'5.0',reviews:'0',img:''});
-    saveData(); renderAAirbnb(document.getElementById('admin-body')); toast(); renderApp();
-  }
+  function addSv(){D.souvenirs.push({name:'New Item',desc:'',price:'20',img:''});sv();toast();renderApp();rSouv(document.getElementById('abody'));}
 
-  /* DELETE */
-  function delItem(type,i){
-    if(!confirm('Delete this item?')) return;
-    DATA[type].splice(i,1);
-    saveData(); toast(); renderApp();
-    const b=document.getElementById('admin-body');
-    if(type==='homes')   renderAHomes(b);
-    if(type==='cars')    renderACars(b);
-    if(type==='airbnbs') renderAAirbnb(b);
-  }
+  function del(key,i){if(!confirm('Delete?'))return;D[key].splice(i,1);sv();toast();renderApp();const b=document.getElementById('abody');if(key==='shortTerm')rRent(b,'shortTerm','Short Term',true);if(key==='longTerm')rRent(b,'longTerm','Long Term',false);if(key==='vans')rVeh(b,'vans','Van');if(key==='cars')rVeh(b,'cars','Car');if(key==='souvenirs')rSouv(b);}
 
-  /* RENDER PUBLIC APP */
+  // SHEET
+  function openSheet(key,i,color){
+    const h=D[key][i];const sp=D.showPrices;
+    document.getElementById('s-img').innerHTML=h.img?`<img src="${h.img}" class="simg" alt="${h.name}"/>`:'';
+    document.getElementById('s-badge').innerHTML=`<span class="sbadge ${h.bc||'bg'}">${h.badge||'Available'}</span>`;
+    document.getElementById('s-name').textContent=h.name;
+    document.getElementById('s-area').textContent=(h.area||'')+' · Orlando, FL';
+    document.getElementById('s-stats').innerHTML=`<div><div class="ssn">${h.beds||'—'}</div><div class="ssl">Beds</div></div><div><div class="ssn">${h.baths||'—'}</div><div class="ssl">Baths</div></div>${sp?`<div><div class="ssn">$${h.price}</div><div class="ssl">${key==='longTerm'?'/mo':'/nt'}</div></div>`:''}`;
+    document.getElementById('s-book').style.background=color;
+    document.getElementById('s-slots').innerHTML=(h.slots&&h.slots.length)?h.slots.map(s=>`<div class="slot-row" style="border-left-color:${color}"><div><div class="slot-d">${s.d}</div><div class="slot-n">${s.n}</div></div>${sp?`<div class="slot-p">${s.p}</div>`:`<div style="font-size:9px;color:rgba(255,255,255,.3)">WhatsApp for price</div>`}</div>`).join(''):`<div style="font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.28);text-align:center;padding:18px 0;text-transform:uppercase">Contact us for availability</div>`;
+    document.getElementById('sheet').classList.add('open');
+    document.getElementById('sbg').style.display='block';
+  }
+  function closeSheet(){document.getElementById('sheet').classList.remove('open');document.getElementById('sbg').style.display='none';}
+
+  // RENDER
   function renderApp(){
-    const sp=DATA.showPrices;
-    document.getElementById('cnt-cars').textContent  = DATA.cars.length;
-    document.getElementById('cnt-homes').textContent = DATA.homes.length;
+    const sp=D.showPrices;
+    document.getElementById('n1').textContent=D.shortTerm.length;
+    document.getElementById('n2').textContent=D.longTerm.length;
+    document.getElementById('n3').textContent=D.vans.length;
+    document.getElementById('n4').textContent=D.cars.length;
+    document.getElementById('n5').textContent=D.souvenirs.length;
 
-    /* PINS */
-    const pe=document.getElementById('pins'); pe.innerHTML='';
-    DATA.homes.forEach((h,i)=>{
-      const cls=h.badge==='Available'?'avail':'limited';
-      const el=document.createElement('div');
-      el.className=`pin ${cls}`;
-      el.style.left=h.px+'%'; el.style.top=h.py+'%';
-      el.innerHTML=`<div class="pin-bubble"><div class="pin-dot"></div>${sp?'$'+h.price+'/nt':h.name.split(' ')[0]}</div><div class="pin-tail"></div>`;
-      el.onclick=()=>openSheet(i); pe.appendChild(el);
+    // short term
+    const sl=document.getElementById('l-short');sl.innerHTML='';
+    D.shortTerm.forEach((h,i)=>{
+      sl.innerHTML+=`<div class="rc"><div class="rc-img" style="background:#A04830">${h.img?`<img src="${h.img}" alt="${h.name}"/>`:''}<div class="rc-badge ${h.bc}">${h.badge}</div></div><div class="rc-body" style="background:#843822"><div><div class="rc-name">${h.name}</div><div class="rc-loc">${h.area||''}</div></div><div class="rc-stats"><div><div class="rsn">${h.beds}</div><div class="rsl">Beds</div></div><div><div class="rsn">${h.baths}</div><div class="rsl">Baths</div></div>${sp?`<div><div class="rsn">$${h.price}</div><div class="rsl">/night</div></div>`:''}</div><button class="rc-btn" onclick="openSheet('shortTerm',${i},'#C85A3A')">Check Availability →</button></div></div>`;
     });
 
-    /* HOMES LIST */
-    const hl=document.getElementById('homes-list'); hl.innerHTML='';
-    DATA.homes.forEach((h,i)=>{
-      hl.innerHTML+=`
-        <div class="home-card">
-          <div class="hc-img" style="background:${h.color}">
-            ${h.img?`<img src="${h.img}" alt="${h.name}"/>`:''}
-            <div class="hc-badge ${h.badgeClass}">${h.badge}</div>
-          </div>
-          <div class="hc-body" style="background:${h.color}">
-            <div class="hc-top"><div><div class="hc-name">${h.name}</div><div class="hc-loc">${h.area}</div></div><div class="circle-btn">→</div></div>
-            <div class="hc-stats">
-              <div><div class="hc-sn">${h.beds}</div><div class="hc-sl">Beds</div></div>
-              <div><div class="hc-sn">${h.baths}</div><div class="hc-sl">Baths</div></div>
-              ${sp?`<div><div class="hc-sn">$${h.price}</div><div class="hc-sl">/night</div></div>`:''}
-            </div>
-            <button class="hc-btn" onclick="openSheet(${i})">Check Availability →</button>
-          </div>
-        </div>`;
+    // long term
+    const ll=document.getElementById('l-long');ll.innerHTML='';
+    D.longTerm.forEach((h,i)=>{
+      ll.innerHTML+=`<div class="rc"><div class="rc-img" style="background:#2A4A5A">${h.img?`<img src="${h.img}" alt="${h.name}"/>`:''}<div class="rc-badge ${h.bc}">${h.badge}</div></div><div class="rc-body" style="background:#1E3A4A"><div><div class="rc-name">${h.name}</div><div class="rc-loc">${h.area||''}</div></div><div class="rc-stats"><div><div class="rsn">${h.beds}</div><div class="rsl">Beds</div></div><div><div class="rsn">${h.baths}</div><div class="rsl">Baths</div></div>${sp?`<div><div class="rsn">$${h.price}</div><div class="rsl">/mo</div></div>`:''}</div>${h.lease?`<div style="font-size:9px;letter-spacing:.18em;color:rgba(255,255,255,.35);text-transform:uppercase">Lease: ${h.lease}</div>`:''}<button class="rc-btn" onclick="openSheet('longTerm',${i},'#4A6A8A')">Inquire →</button></div></div>`;
     });
 
-    /* CARS */
-    const cl=document.getElementById('cars-list'); cl.innerHTML='';
-    DATA.cars.forEach(c=>{
-      cl.innerHTML+=`
-        <div class="car-card" style="background:${c.color}">
-          ${c.img?`<img src="${c.img}" alt="${c.name}"/>`:''}
-          <div class="car-z">
-            <div class="car-top"><div><div class="car-name">${c.name}</div><div class="car-yr">${c.year}</div></div><div class="circle-btn">→</div></div>
-            <div class="car-bot">
-              ${sp?`<div><div style="font-size:20px;font-weight:700;color:#fff">$${c.price}/day</div><div style="font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.45);text-transform:uppercase;margin-top:2px">Per day</div></div>`
-                  :`<div style="font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.15em">Call for pricing</div>`}
-              <a href="${TURO_URL}" target="_blank" class="turo-btn">Book on Turo →</a>
-            </div>
-          </div>
-        </div>`;
-    });
+    // vans
+    const vl=document.getElementById('l-vans');vl.innerHTML='';
+    D.vans.forEach(v=>{vl.innerHTML+=vCard(v,'#4A6A8A',sp);});
 
-    /* AIRBNB */
-    const al=document.getElementById('airbnb-list'); al.innerHTML='';
-    DATA.airbnbs.forEach(a=>{
-      al.innerHTML+=`
-        <div class="ab-card">
-          <div class="ab-img-wrap">
-            ${a.img?`<img src="${a.img}" alt="${a.name}"/>`:''}
-            <div class="ab-sup">Superhost</div>
-          </div>
-          <div class="ab-body">
-            <div class="ab-top"><div><div class="ab-name">${a.name}</div><div class="ab-loc">${a.area}</div></div><div class="circle-btn" style="border-color:rgba(255,90,95,.4)">→</div></div>
-            <div class="ab-row">
-              ${sp?`<div><div style="font-size:20px;font-weight:700;color:#fff">$${a.price}/night</div><div style="font-size:8px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-top:2px">Per night</div></div>`
-                  :`<div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.15em">Call for pricing</div>`}
-              <div style="text-align:right"><div class="ab-stars">★ ${a.rating}</div><div class="ab-rev">${a.reviews} reviews</div></div>
-            </div>
-            <a href="${AIRBNB_URL}" target="_blank" class="ab-link">Book on Airbnb →</a>
-          </div>
-        </div>`;
+    // cars
+    const cl=document.getElementById('l-cars');cl.innerHTML='';
+    D.cars.forEach(v=>{cl.innerHTML+=vCard(v,'#7A6040',sp);});
+
+    // souvenirs
+    const svl=document.getElementById('l-souv');svl.innerHTML='';
+    D.souvenirs.forEach(s=>{
+      svl.innerHTML+=`<div class="sc">${s.img?`<div class="sc-img"><img src="${s.img}" alt="${s.name}"/></div>`:''}<div class="sc-body" style="background:#1E1428"><div><div class="sc-name">${s.name}</div><div class="sc-desc">${s.desc||''}</div></div><div class="sc-row">${sp?`<div class="sc-price">$${s.price}</div>`:`<div style="font-size:11px;color:rgba(255,255,255,.38);letter-spacing:.13em">Ask for price</div>`}<button class="sc-btn" onclick="window.open(WA,'_blank')">Order →</button></div></div></div>`;
     });
   }
 
-  /* PROPERTY SHEET */
-  function openSheet(i){
-    const h=DATA.homes[i]; const sp=DATA.showPrices;
-    document.getElementById('prop-img-wrap').innerHTML=h.img?`<img src="${h.img}" class="prop-img" alt="${h.name}"/>`:'';
-    document.getElementById('prop-badge-wrap').innerHTML=`<span class="prop-badge ${h.badgeClass}">${h.badge}</span>`;
-    document.getElementById('prop-name').textContent=h.name;
-    document.getElementById('prop-area').textContent=h.area+' · Orlando, FL';
-    document.getElementById('prop-stats').innerHTML=
-      `<div><div class="ps-n">${h.beds}</div><div class="ps-l">Beds</div></div>
-       <div><div class="ps-n">${h.baths}</div><div class="ps-l">Baths</div></div>
-       ${sp?`<div><div class="ps-n">$${h.price}</div><div class="ps-l">/ night</div></div>`:''}`;
-    document.getElementById('prop-slots').innerHTML=h.slots.map(s=>`
-      <div class="slot">
-        <div><div class="slot-d">${s.d}</div><div class="slot-n">${s.n}</div></div>
-        ${sp?`<div class="slot-p">${s.p}</div>`:`<div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.1em">WhatsApp for price</div>`}
-      </div>`).join('');
-    document.getElementById('prop-sheet').classList.add('open');
-    document.getElementById('sheet-overlay').style.display='block';
-  }
-  function closeSheet(){
-    document.getElementById('prop-sheet').classList.remove('open');
-    document.getElementById('sheet-overlay').style.display='none';
-  }
-
-  function show(id){
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active'); window.scrollTo(0,0);
-  }
-  function switchView(v){
-    document.getElementById('map-view').style.display =v==='map' ?'flex':'none';
-    document.getElementById('list-view').style.display=v==='list'?'block':'none';
-    document.getElementById('btn-map').className ='toggle-btn '+(v==='map' ?'active':'inactive');
-    document.getElementById('btn-list').className='toggle-btn '+(v==='list'?'active':'inactive');
+  function vCard(v,color,sp){
+    return `<div class="vc" style="background:${color}">${v.img?`<img src="${v.img}" alt="${v.name}"/>`:''}<div class="vz"><div class="vt"><div><div class="vn">${v.name}</div><div class="vs">${v.year||''}</div></div><div class="tile-arrow">→</div></div><div class="vb">${sp?`<div><div class="vp">$${v.price}/day</div><div class="vpl">Per day</div></div>`:`<div style="font-size:11px;color:rgba(255,255,255,.42);letter-spacing:.13em">Call for pricing</div>`}<button class="vbtn" onclick="window.open(WA,'_blank')">Book →</button></div></div></div>`;
   }
 
   renderApp();
